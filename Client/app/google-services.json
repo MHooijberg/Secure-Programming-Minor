@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "794959859777",
+    "project_id": "devlink-89dfe",
+    "storage_bucket": "devlink-89dfe.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:794959859777:android:a8a64838d6111d53f3b6c0",
+        "android_client_info": {
+          "package_name": "com.example.chatsystemfordevs"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "794959859777-tqktmd8q4i6fdrehiuajjrmtfbuk7vkg.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCuQPfZm8frai_wqKe7ouRuyCXh7iPQbrA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "794959859777-tqktmd8q4i6fdrehiuajjrmtfbuk7vkg.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
