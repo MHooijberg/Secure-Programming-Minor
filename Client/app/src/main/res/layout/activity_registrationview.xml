@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.15" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.85"/>
+
+    <TextView
+        android:id="@+id/RegistrationInfo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="56dp"
+        android:text="@string/register_an_account"
+        app:layout_constraintEnd_toEndOf="@id/guideline3"
+        app:layout_constraintStart_toStartOf="@id/guideline2"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/UsernameText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/UsernameTextInfo"
+        app:layout_constraintBottom_toTopOf="@id/Username"
+        app:layout_constraintEnd_toEndOf="@id/guideline3"
+        app:layout_constraintStart_toStartOf="@id/guideline2" />
+
+    <EditText
+        android:id="@+id/Username"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="44dp"
+        android:hint="@string/UsernameHint"
+        android:inputType="textPersonName"
+        app:layout_constraintEnd_toEndOf="@id/guideline3"
+        app:layout_constraintStart_toStartOf="@id/guideline2"
+        app:layout_constraintTop_toBottomOf="@id/RegistrationInfo"
+        android:importantForAutofill="no" />
+
+    <TextView
+        android:id="@+id/EmailText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/EmailText"
+        app:layout_constraintEnd_toEndOf="@id/guideline3"
+        app:layout_constraintStart_toStartOf="@id/guideline2"
+        app:layout_constraintBottom_toTopOf="@id/UserEmail" />
+
+    <EditText
+        android:id="@+id/UserEmail"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="56dp"
+        android:hint="@string/EmailHint"
+        android:inputType="textEmailAddress"
+        app:layout_constraintEnd_toEndOf="@id/guideline3"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="@id/guideline2"
+        app:layout_constraintTop_toBottomOf="@id/Username"
+        android:importantForAutofill="no"/>
+
+    <TextView
+        android:id="@+id/PhoneNumberText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/PhoneNumber"
+        app:layout_constraintEnd_toEndOf="@id/guideline3"
+        app:layout_constraintStart_toStartOf="@id/guideline2"
+        app:layout_constraintBottom_toTopOf="@id/PhoneNumber" />
+
+    <EditText
+        android:id="@+id/PhoneNumber"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="56dp"
+        android:hint="@string/PhoneNumber"
+        android:inputType="phone"
+        app:layout_constraintEnd_toEndOf="@id/guideline3"
+        app:layout_constraintStart_toStartOf="@id/guideline2"
+        app:layout_constraintTop_toBottomOf="@id/UserEmail"
+        android:importantForAutofill="no"/>
+
+
+    <TextView
+        android:id="@+id/UserPasswordText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/PasswordText"
+        app:layout_constraintBottom_toTopOf="@id/UserPassword"
+        app:layout_constraintEnd_toEndOf="@id/guideline3"
+        app:layout_constraintStart_toStartOf="@id/guideline2"
+        />
+
+    <EditText
+        android:id="@+id/UserPassword"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="52dp"
+        android:hint="@string/PasswordHint"
+        android:inputType="textPassword"
+        app:layout_constraintEnd_toEndOf="@id/guideline3"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@id/guideline2"
+        app:layout_constraintTop_toBottomOf="@id/PhoneNumber"
+        android:importantForAutofill="no"/>
+
+    <TextView
+        android:id="@+id/UserPasswordRepeatedText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/repeatPasswordText"
+        app:layout_constraintBottom_toTopOf="@id/UserPasswordRepeated"
+        app:layout_constraintEnd_toEndOf="@id/guideline3"
+        app:layout_constraintStart_toStartOf="@id/guideline2" />
+
+    <EditText
+        android:id="@+id/UserPasswordRepeated"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="52dp"
+        android:hint="@string/PasswordHint"
+        android:inputType="textPassword"
+        app:layout_constraintEnd_toEndOf="@id/guideline3"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@id/guideline2"
+        app:layout_constraintTop_toBottomOf="@id/UserPassword"
+        android:importantForAutofill="no"/>
+
+    <Button
+        android:id="@+id/RegistrationButton"
+        android:layout_width="85sp"
+        android:layout_height="50sp"
+        android:layout_marginTop="60dp"
+        android:text="@string/next"
+        app:layout_constraintEnd_toEndOf="@id/guideline3"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="@id/guideline2"
+        app:layout_constraintTop_toBottomOf="@id/UserPasswordRepeated" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
