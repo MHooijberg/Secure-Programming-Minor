@@ -26,12 +26,12 @@ public class RegistrationActivityController extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_registrationview);
         authenticationManager = new AuthenticationManager();
-        this.button = findViewById(R.id.RegistrationButton);
-        this.username = findViewById(R.id.Username);
-        this.email = findViewById(R.id.UserEmail);
+        this.button = findViewById(R.id.NextButton);
+        this.username = findViewById(R.id.EditUsername);
+        this.email = findViewById(R.id.UserEmailAddress);
         this.password = findViewById(R.id.UserPassword);
-        this.phoneNumber = findViewById(R.id.PhoneNumber);
-        this.repeatablePassword = findViewById(R.id.UserPasswordRepeated);
+        this.phoneNumber = findViewById(R.id.UserPhoneNumber);
+        this.repeatablePassword = findViewById(R.id.UserRepeatedPassword);
         registerUser();
     }
 
@@ -48,8 +48,7 @@ public class RegistrationActivityController extends AppCompatActivity implements
             String repeatPass = repeatablePassword.getText().toString();
 
             if (!TextUtils.isEmpty(usr) && !TextUtils.isEmpty(usrEmail) && !TextUtils.isEmpty(phoneInput) && !TextUtils.isEmpty(pass)) {
-                if (authenticationManager.isEmailValid(usrEmail)
-                        && authenticationManager.isPhoneNumberValid(phoneInput)
+                if (authenticationManager.isEmailValid(usrEmail) && authenticationManager.isPhoneNumberValid(phoneInput)
                         && authenticationManager.isPasswordValidated(pass)
                         && authenticationManager.isPasswordEqual(pass, repeatPass)) {
                     authenticationManager.registerUser(RegistrationActivityController.this, usr, usrEmail, pass, phoneInput);
