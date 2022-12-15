@@ -3,25 +3,28 @@
  */
 package devlink_server;
 
-import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
-import com.google.auth.oauth2.GoogleCredentials;
-import com.google.firebase.FirebaseApp;
-import com.google.firebase.FirebaseOptions;
+import java.util.*;
+import java.lang.*;
+import java.io.*;
 
 public class App {
     public static void main(String[] args) {
-        // Set the environment variable with the following command in the console: $env:GOOGLE_APPLICATION_CREDENTIALS="path/to/the/service-account-file.json"
-        FirebaseOptions options = null;
+        FirebaseManager firebaseManager;
         try {
-            options = FirebaseOptions.builder()
-                .setCredentials(GoogleCredentials.getApplicationDefault())
-                .setDatabaseUrl("https://devlink-89dfe.firebaseio.com/")
-                .build();
-        } catch (IOException e) {
-            e.printStackTrace();
+            firebaseManager = new FirebaseManager();
+            firebaseManager.InitializeFirebase();
+
+            firebaseManager.FCMDirectExample("");
+            firebaseManager.FCMMulticastExample(Arrays.asList("", ""));
+            firebaseManager.FCMTopicExample("");
+        } catch (Exception e) {
+            // TODO: handle exception
         }
-    
-        FirebaseApp.initializeApp(options);
+        
+
     }
 }
