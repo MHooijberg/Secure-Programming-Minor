@@ -1,23 +1,23 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="Theme.ChatSystemForDevs" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
+    <style name="Theme.ChatSystemForDevs" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <!-- Defining colors -->
-        <item name="colorPrimary">@color/golden</item>
-        <item name="colorOnPrimary">@color/black</item>
-        <item name="colorSecondary">@color/dark_blue</item>
-        <item name="colorSecondaryVariant">@color/dark_gray</item>
-        <item name="colorOnSecondary">@color/ghost</item>
+        <item name="colorPrimary">@color/dark_blue</item>
+        <item name="colorPrimaryVariant">@color/dark_gray</item>
+        <item name="colorOnPrimary">@color/ghost</item>
+        <item name="colorSecondary">@color/golden</item>
+        <item name="colorOnSecondary">@color/black</item>
         <item name="colorAccent">@color/ghost</item>
         <item name="subtitleTextColor">@color/gray</item>
         <item name="errorTextColor">@color/red</item>
         <!-- Applying colors -->
-        <item name="android:textColorPrimary">?attr/colorPrimary</item>
-        <item name="android:textColor">?attr/colorOnSecondary</item>
-        <item name="android:textColorLink">?attr/colorPrimary</item>
+        <item name="android:textColor">?attr/colorOnPrimary</item>
+        <item name="android:textColorLink">?attr/colorSecondary</item>
         <item name="android:subtitleTextColor">?attr/subtitleTextColor</item>
-        <item name="android:editTextColor">?attr/subtitleTextColor</item>
-        <item name="android:editTextBackground">?attr/colorSecondaryVariant</item>
+        <item name="android:editTextColor">?attr/colorOnPrimary</item>
+        <item name="android:editTextBackground">?attr/colorPrimaryVariant</item>
         <item name="android:textColorHint">?attr/subtitleTextColor</item>
+
         <!-- Status bar color -->
         <item name="android:statusBarColor">?attr/colorPrimary</item>
 
@@ -27,6 +27,10 @@
         <!-- Customize your theme here -->
     </style>
     <style name="Theme.AuthScreens" parent="Theme.ChatSystemForDevs">
-        <item name="android:textSize">20sp</item>
+        <item name="android:textSize">18sp</item>
+        <item name="materialButtonStyle">@style/auth_button</item>
+    </style>
+    <style name="Theme.GuildScreens" parent="Theme.ChatSystemForDevs">
+        <item name="android:textSize">16sp</item>
     </style>
 </resources>

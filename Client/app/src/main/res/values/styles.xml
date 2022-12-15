@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="auth_button">
-
+    <style name="auth_button" parent="@style/Widget.MaterialComponents.Button">
+        <item name="backgroundColor">?attr/colorSecondary</item>
+        <item name="android:textColor">?attr/colorOnSecondary</item>
+        <item name="android:textSize">34sp</item>
+        <!-- <item name="cornerRadius">32sp</item> -->
     </style>
 </resources>
