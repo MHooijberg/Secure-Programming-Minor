@@ -1,4 +1,13 @@
 <resources>
     <string name="app_name">ChatSystemForDevs</string>
     <string name="next">Next</string>
+    <string name="register_an_account">Register an account</string>
+    <string name="UsernameTextInfo">Username</string>
+    <string name="PasswordText">Password</string>
+    <string name="repeatPasswordText">Repeat Password</string>
+    <string name="EmailText">Email</string>
+    <string name="UsernameHint">Username</string>
+    <string name="EmailHint">Email</string>
+    <string name="PasswordHint">Password</string>
+    <string name="PhoneNumber">PhoneNumber</string>
 </resources>
