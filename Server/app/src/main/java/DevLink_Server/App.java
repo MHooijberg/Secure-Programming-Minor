@@ -3,25 +3,12 @@
  */
 package devlink_server;
 
-import java.io.IOException;
-
-import com.google.auth.oauth2.GoogleCredentials;
-import com.google.firebase.FirebaseApp;
-import com.google.firebase.FirebaseOptions;
+import java.util.concurrent.ExecutionException;
 
 public class App {
-    public static void main(String[] args) {
-        // Set the environment variable with the following command in the console: $env:GOOGLE_APPLICATION_CREDENTIALS="path/to/the/service-account-file.json"
-        FirebaseOptions options = null;
-        try {
-            options = FirebaseOptions.builder()
-                .setCredentials(GoogleCredentials.getApplicationDefault())
-                .setDatabaseUrl("https://devlink-89dfe.firebaseio.com/")
-                .build();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    
-        FirebaseApp.initializeApp(options);
+    public static void main(String[] args) throws UnsupportedOperationException, InterruptedException, ExecutionException {
+        FirebaseManager firebaseManager = new FirebaseManager();
+        firebaseManager.InitializeFirebase();
+        
     }
 }
