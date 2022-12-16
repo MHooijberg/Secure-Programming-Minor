@@ -3,6 +3,7 @@
     <color name="golden">#FFC300</color>
     <color name="ghost">#ECEBF3</color>
     <color name="dark_blue">#232032</color>
+    <color name="dark_blue_transparent">#88232032</color>
     <color name="gray">#9C9BA3</color>
     <color name="dark_gray">#25232D</color>
     <color name="red">#DF2323</color>

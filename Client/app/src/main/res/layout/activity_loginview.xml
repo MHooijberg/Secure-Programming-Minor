@@ -5,7 +5,8 @@
     android:background="@drawable/bg"
     android:theme="@style/Theme.AuthScreens"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline2"
@@ -50,10 +51,8 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="92dp"
         android:layout_marginTop="112dp"
-        android:fontFamily="@font/inputmono_medium"
         android:text="@string/login"
-        android:textColor="?attr/colorPrimary"
-        android:textSize="60sp"
+        style="@style/title_text"
         app:layout_constraintStart_toStartOf="@+id/guideline2"
         app:layout_constraintTop_toTopOf="@+id/guideline4" />
 
@@ -68,7 +67,7 @@
         app:layout_constraintTop_toBottomOf="@+id/textView2" />
 
     <EditText
-        android:id="@+id/editTextTextPersonName"
+        android:id="@+id/Username"
         style="@style/Widget.AppCompat.EditText"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -91,10 +90,10 @@
         android:layout_marginTop="16dp"
         android:text="@string/password"
         app:layout_constraintStart_toStartOf="@+id/guideline2"
-        app:layout_constraintTop_toBottomOf="@+id/editTextTextPersonName" />
+        app:layout_constraintTop_toBottomOf="@+id/Username" />
 
     <EditText
-        android:id="@+id/editTextTextPassword"
+        android:id="@+id/UserPassword"
         android:layout_width="0dp"
         android:layout_height="48dp"
         android:layout_marginStart="44dp"
@@ -114,8 +113,9 @@
         android:layout_marginStart="44dp"
         android:layout_marginTop="4dp"
         android:text="@string/forgot_password"
+        android:textColor="?attr/colorSecondary"
         app:layout_constraintStart_toStartOf="@+id/guideline2"
-        app:layout_constraintTop_toBottomOf="@+id/editTextTextPassword" />
+        app:layout_constraintTop_toBottomOf="@+id/UserPassword" />
 
     <Button
         android:id="@+id/next"
@@ -127,7 +127,6 @@
         android:paddingBottom="0dp"
         android:text="@string/next"
         android:textSize="34sp"
-        app:cornerRadius="32sp"
         app:layout_constraintStart_toStartOf="@+id/guideline2"
         app:layout_constraintTop_toBottomOf="@+id/textView5" />
 
