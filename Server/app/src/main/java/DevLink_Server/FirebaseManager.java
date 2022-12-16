@@ -74,8 +74,8 @@ public class FirebaseManager {
 
         // See documentation on defining a message payload.
         Message message = Message.builder()
-            .putData("score", "850")
-            .putData("time", "2:45")
+            .putData("Message", "This is some custom message content")
+            .putData("Recipient", "Georgie is the recipient")
             .setToken(registrationToken)
             .build();
 
@@ -136,6 +136,7 @@ public class FirebaseManager {
     String response = null;
     try {
         response = firebaseMessagingInstance.send(message);
+        
     } catch (FirebaseMessagingException e) {
         // TODO Auto-generated catch block
         e.printStackTrace();

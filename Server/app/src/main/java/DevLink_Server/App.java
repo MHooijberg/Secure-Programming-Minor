@@ -18,9 +18,9 @@ public class App {
             firebaseManager = new FirebaseManager();
             firebaseManager.InitializeFirebase();
 
-            firebaseManager.FCMDirectExample("");
-            firebaseManager.FCMMulticastExample(Arrays.asList("", ""));
-            firebaseManager.FCMTopicExample("");
+            firebaseManager.FCMDirectExample("ev4XvM5wRuSczVHG0pI1n_:APA91bG-OprUWC35VrD_6DUNuiWnYhyy0vpEUXUMv5xvr9b9mXPyY-rWFrM6HLjMIGIn3S8nlAyrRDH5zG2-d_YkNMxwMIgPNeb3I2TKiKpqaUmzuCrgDIUpYJ4p4wfLWjKCpQjVQxCc");
+            //firebaseManager.FCMMulticastExample(Arrays.asList("", ""));
+            //firebaseManager.FCMTopicExample("");
         } catch (Exception e) {
             // TODO: handle exception
         }
