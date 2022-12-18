@@ -9,14 +9,16 @@
     android:theme="@style/Theme.GuildScreens">
 
     <androidx.cardview.widget.CardView
-        android:id="@+id/image_profile_card"
+        android:id="@+id/logged_in_user_card"
         android:layout_width="50dp"
         android:layout_height="50dp"
+        android:layout_marginTop="5dp"
         app:cardCornerRadius="100dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
+
         <ImageView
-            android:id="@+id/image_profile"
+            android:id="@+id/logged_in_user_card_image"
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:background="@color/golden"
@@ -35,7 +37,7 @@
         android:orientation="vertical"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toEndOf="@+id/image_profile_card"
+        app:layout_constraintStart_toEndOf="@+id/logged_in_user_card"
         app:layout_constraintTop_toTopOf="parent">
 
         <LinearLayout
@@ -49,7 +51,7 @@
                 android:layout_height="wrap_content"
                 android:text="John Grady Cole"
                 android:textSize="18dp"
-                android:fontFamily="@font/inputmon_bold"
+                android:fontFamily="@font/inputmono_bold"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/text_date" />
 

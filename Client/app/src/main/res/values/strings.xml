@@ -24,4 +24,21 @@
     <string name="EmailHint">Email</string>
     <string name="PasswordHint">Password</string>
     <string name="PhoneNumber">PhoneNumber</string>
+    <string name="guild_image">Guild image</string>
+    <string name="user_image">User image</string>
+    <string name="search_icon">Search Icon</string>
+    <string name="guild_name">Guild name</string>
+    <string name="plus_icon">Plus icon</string>
+    <string name="gear_icon">Gear icon</string>
+    <string name="github_logo">Github logo</string>
+    <string name="github_api">GitHub API</string>
+    <string name="stackoverflow_logo">Stackoverflow logo</string>
+    <string name="stackoverflow_api">StackOverflow API</string>
+    <string name="logged_in_user_image">Logged in user image</string>
+    <string name="enter_message">Enter Message</string>
+    <string name="change_password">Change password</string>
+    <string name="change_phone_number">Change phone number</string>
+    <string name="someemailaddress_domain_com">someemailaddress@domain.com</string>
+    <string name="username_here">username_here</string>
+    <string name="settings">Settings</string>
 </resources>

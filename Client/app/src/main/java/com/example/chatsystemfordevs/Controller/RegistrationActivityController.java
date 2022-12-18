@@ -26,12 +26,12 @@ public class RegistrationActivityController extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_registrationview);
         authenticationManager = new AuthenticationManager();
-        this.button = findViewById(R.id.RegistrationButton);
-        this.username = findViewById(R.id.Username);
-        this.email = findViewById(R.id.UserEmail);
-        this.password = findViewById(R.id.UserPassword);
-        this.phoneNumber = findViewById(R.id.PhoneNumber);
-        this.repeatablePassword = findViewById(R.id.UserPasswordRepeated);
+        this.button = findViewById(R.id.next_button_register);
+        this.username = findViewById(R.id.username_edit_text);
+        this.email = findViewById(R.id.email_edit_text);
+        this.password = findViewById(R.id.password_edit_text);
+        this.phoneNumber = findViewById(R.id.phone_number_edit_text);
+        this.repeatablePassword = findViewById(R.id.repeat_password_edit_text);
         registerUser();
     }
 

@@ -13,4 +13,12 @@
         <item name="android:textColor">?attr/colorSecondary</item>
         <item name="fontFamily">@font/inputmono_medium</item>
     </style>
+    <style name="guild_list_item">
+        <item name="android:backgroundTint">?attr/colorPrimaryVariant</item>
+        <item name="android:layout_width">67dp</item>
+        <item name="android:layout_height">67dp</item>
+        <item name="android:layout_marginTop">8dp</item>
+        <item name="android:layout_marginStart">7dp</item>
+        <item name="cardCornerRadius">100dp</item>
+    </style>
 </resources>
