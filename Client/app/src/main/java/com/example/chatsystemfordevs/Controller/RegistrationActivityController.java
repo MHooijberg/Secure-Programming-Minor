@@ -3,6 +3,7 @@ package com.example.chatsystemfordevs.Controller;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -33,6 +34,14 @@ public class RegistrationActivityController extends AppCompatActivity implements
         this.phoneNumber = findViewById(R.id.phone_number_edit_text);
         this.repeatablePassword = findViewById(R.id.repeat_password_edit_text);
         registerUser();
+    }
+
+    public void onBackTextClick(View view){
+        this.finish();
+    }
+
+    public void onNextButtonClick(View view){
+
     }
 
     @Override

@@ -1,6 +1,6 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="Theme.ChatSystemForDevs" parent="Theme.MaterialComponents.DayNight">
+    <style name="Theme.ChatSystemForDevs" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <!-- Defining colors -->
         <item name="colorPrimary">@color/dark_blue</item>
         <item name="colorPrimaryVariant">@color/dark_gray</item>

@@ -28,23 +28,30 @@ public class GuildServerController extends AppCompatActivity {
 
     MessageAdapter adapter;
     RecyclerView recyclerView;
+    Toolbar toolbar;
+
+    String[] usernames, dates, messages;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_guildserverview);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+
+        toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        toolbar.setNavigationIcon(R.drawable.burger);
 
+        recyclerView = findViewById(R.id.messages_recycler);
 
-        List<MessageData> list = new ArrayList<>();
-        list = getData();
+        usernames = getResources().getStringArray(R.array.message_usernames);
+        dates = getResources().getStringArray(R.array.message_dates);
+        messages = getResources().getStringArray(R.array.message_messages);
 
-        recyclerView = (RecyclerView)findViewById(R.id.messages_recycler);
-        adapter = new MessageAdapter(list, getApplication());
+        adapter = new MessageAdapter(this, usernames, dates, messages);
         recyclerView.setAdapter(adapter);
-        recyclerView.setLayoutManager(new LinearLayoutManager(GuildServerController.this));
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
     }
 
     @Override
@@ -58,9 +65,6 @@ public class GuildServerController extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle item selection
         switch (item.getItemId()) {
-            case R.id.action_burger:
-                //function
-                return true;
             case R.id.action_members:
                 //function
                 return true;
@@ -73,22 +77,5 @@ public class GuildServerController extends AppCompatActivity {
     public void onBackPressed()
     {
         super.onBackPressed();
-    }
-
-    // Sample data for RecyclerView
-    private List<MessageData> getData()
-    {
-        List<MessageData> list = new ArrayList<>();
-        list.add(new MessageData("Username1",
-                "2022-01-03 08:00",
-                "this is a chat message"));
-        list.add(new MessageData("username2",
-                "2022-01-04 14:54",
-                "Wow! that is such a cool message!"));
-        list.add(new MessageData("username1",
-                "2022-02-28 01:22",
-                "Aspernatur reiciendis ut quia impedit iusto nobis. Omnis laudantium velit ex itaque est sunt et. Fugit aut doloremque rerum laborum. Non ea veniam dolorem veritatis reprehenderit reprehenderit voluptatem facilis. Alias laborum voluptatibus quia vel. Sunt id neque deserunt."));
-
-        return list;
     }
 }

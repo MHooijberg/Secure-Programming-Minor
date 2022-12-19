@@ -27,6 +27,9 @@
         </activity>
         
         <activity android:name=".Controller.LoginActivityController" android:exported="false" />
+        <activity android:name=".Controller.RegistrationActivityController" android:exported="false" />
+        <activity android:name=".Controller.OTPActivityController" android:exported="false" />
+        <activity android:name=".Controller.GuildServerController" android:exported="false" />
     </application>
 
 </manifest>

@@ -1,4 +1,49 @@
 <resources>
+    <string-array name="message_usernames">
+        <item>Username1</item>
+        <item>Username2</item>
+        <item>Username3</item>
+        <item>Username1</item>
+        <item>Username2</item>
+        <item>Username3</item>
+        <item>Username1</item>
+        <item>Username2</item>
+        <item>Username3</item>
+        <item>Username1</item>
+        <item>Username2</item>
+        <item>Username3</item>
+    </string-array>
+
+    <string-array name="message_dates">
+        <item>2022-03-01 15:51</item>
+        <item>2022-03-02 15:51</item>
+        <item>2022-03-02 21:04</item>
+        <item>2022-03-01 15:51</item>
+        <item>2022-03-02 15:51</item>
+        <item>2022-03-02 21:04</item>
+        <item>2022-03-01 15:51</item>
+        <item>2022-03-02 15:51</item>
+        <item>2022-03-02 21:04</item>
+        <item>2022-03-01 15:51</item>
+        <item>2022-03-02 15:51</item>
+        <item>2022-03-02 21:04</item>
+    </string-array>
+
+    <string-array name="message_messages">
+        <item>Wowzers, this is a message</item>
+        <item>This is so cool isn\'t it</item>
+        <item>Aspernatur reiciendis ut quia impedit iusto nobis. Omnis laudantium velit ex itaque est sunt et. Fugit aut doloremque rerum laborum. Non ea veniam dolorem veritatis reprehenderit reprehenderit voluptatem facilis. Alias laborum voluptatibus quia vel. Sunt id neque deserunt</item>
+        <item>Wowzers, this is a message</item>
+        <item>This is so cool isn\'t it</item>
+        <item>Aspernatur reiciendis ut quia impedit iusto nobis. Omnis laudantium velit ex itaque est sunt et. Fugit aut doloremque rerum laborum. Non ea veniam dolorem veritatis reprehenderit reprehenderit voluptatem facilis. Alias laborum voluptatibus quia vel. Sunt id neque deserunt</item>
+        <item>Wowzers, this is a message</item>
+        <item>This is so cool isn\'t it</item>
+        <item>Aspernatur reiciendis ut quia impedit iusto nobis. Omnis laudantium velit ex itaque est sunt et. Fugit aut doloremque rerum laborum. Non ea veniam dolorem veritatis reprehenderit reprehenderit voluptatem facilis. Alias laborum voluptatibus quia vel. Sunt id neque deserunt</item>
+        <item>Wowzers, this is a message</item>
+        <item>This is so cool isn\'t it</item>
+        <item>Aspernatur reiciendis ut quia impedit iusto nobis. Omnis laudantium velit ex itaque est sunt et. Fugit aut doloremque rerum laborum. Non ea veniam dolorem veritatis reprehenderit reprehenderit voluptatem facilis. Alias laborum voluptatibus quia vel. Sunt id neque deserunt</item>
+    </string-array>
+
     <string name="app_name">ChatSystemForDevs</string>
     <string name="login">Login</string>
     <string name="username">Username</string>

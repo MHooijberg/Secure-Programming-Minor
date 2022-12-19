@@ -9,13 +9,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.chatsystemfordevs.R;
 import com.example.chatsystemfordevs.Utilities.AuthenticationManager;
 
-public class LoginActivityController extends AppCompatActivity {
+public class OTPActivityController extends AppCompatActivity {
     private AuthenticationManager authenticationManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_loginview);
+        setContentView(R.layout.activity_2faview);
     }
 
     public void onBackTextClick(View view){
@@ -23,6 +23,6 @@ public class LoginActivityController extends AppCompatActivity {
     }
 
     public void onNextButtonClick(View view){
-        startActivity(new Intent(this, OTPActivityController.class));
+        startActivity(new Intent(this, GuildServerController.class));
     }
 }

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -13,55 +14,50 @@ import java.util.Collections;
 import java.util.List;
 
 
-public class MessageAdapter extends RecyclerView.Adapter<MessageViewHolder> {
+public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageViewHolder> {
 
-    List<MessageData> list = Collections.emptyList();
-
+    String[] usernames, dates, messages;
     Context context;
 
-    public MessageAdapter(List<MessageData> list, Context context)
+    public MessageAdapter(Context context, String[] usernames, String[] dates, String[] messages)
     {
-        this.list = list;
         this.context = context;
+        this.usernames = usernames;
+        this.dates = dates;
+        this.messages = messages;
     }
 
     @Override
-    public MessageViewHolder
-    onCreateViewHolder(ViewGroup parent, int viewType)
+    public MessageViewHolder onCreateViewHolder(ViewGroup parent, int viewType)
     {
-
-        Context context = parent.getContext();
         LayoutInflater inflater = LayoutInflater.from(context);
-
-        // Inflate the layout
-
-        View photoView = inflater.inflate(R.layout.guild_message, parent, false);
-
-        MessageViewHolder viewHolder = new MessageViewHolder(photoView);
-        return viewHolder;
+        View view = inflater.inflate(R.layout.guild_message, parent, false);
+        return new MessageViewHolder(view);
     }
 
     @Override
-    public void
-    onBindViewHolder(final MessageViewHolder viewHolder, final int position)
+    public void onBindViewHolder(final MessageViewHolder viewHolder, final int position)
     {
-        final int index = viewHolder.getAdapterPosition();
-        viewHolder.messageUsername.setText(list.get(position).username);
-        viewHolder.messageDate.setText(list.get(position).date);
-        viewHolder.messageMessage.setText(list.get(position).message);
+        viewHolder.messageUsername.setText(usernames[position]);
+        viewHolder.messageDate.setText(dates[position]);
+        viewHolder.messageMessage.setText(messages[position]);
     }
 
     @Override
     public int getItemCount()
     {
-        return list.size();
+        return messages.length;
     }
 
-    @Override
-    public void onAttachedToRecyclerView(RecyclerView recyclerView)
-    {
-        super.onAttachedToRecyclerView(recyclerView);
+    public static class MessageViewHolder extends RecyclerView.ViewHolder {
+        TextView messageUsername, messageMessage, messageDate;
+
+        public MessageViewHolder(View itemView)
+        {
+            super(itemView);
+            messageUsername = itemView.findViewById(R.id.text_user);
+            messageDate = itemView.findViewById(R.id.text_timestamp);
+            messageMessage = itemView.findViewById(R.id.text_message);
+        }
     }
-
-
 }
