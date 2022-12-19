@@ -1,6 +1,6 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="Theme.ChatSystemForDevs" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+    <style name="Theme.ChatSystemForDevs" parent="Theme.MaterialComponents.DayNight">
         <!-- Defining colors -->
         <item name="colorPrimary">@color/dark_blue</item>
         <item name="colorPrimaryVariant">@color/dark_gray</item>
@@ -29,6 +29,7 @@
     <style name="Theme.AuthScreens" parent="Theme.ChatSystemForDevs">
         <item name="android:textSize">18sp</item>
         <item name="materialButtonStyle">@style/auth_button</item>
+        <item name="windowActionBar">false</item>
     </style>
     <style name="Theme.GuildScreens" parent="Theme.ChatSystemForDevs">
         <item name="android:textSize">16sp</item>
