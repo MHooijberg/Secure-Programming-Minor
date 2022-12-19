@@ -3,6 +3,7 @@ package com.example.chatsystemfordevs.Utilities;
 import static com.google.firebase.appcheck.internal.util.Logger.TAG;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.text.TextUtils;
 import android.util.Log;
@@ -15,28 +16,37 @@ import com.example.chatsystemfordevs.Controller.GuildServerController;
 import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.Objects;
+import com.example.chatsystemfordevs.Controller.LoginActivityController;
+
+import java.util.Objects;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class AuthenticationManager {
     private final FirebaseAuth firebaseAuth;
     private final DBHelper database;
+    private static final String emailPatternValidation = "^(?=.{1,64}@)[A-Za-z0-9_-]+(\\.[A-Za-z0-9_-]+)*@"
+            + "[^-][A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[A-Za-z]{2,})$";
+    private static final int usernameLengthLimit = 15;
 
     public AuthenticationManager() {
         this.firebaseAuth = FirebaseAuth.getInstance();
-        database = new DBHelper();
+        this.database = new DBHelper();
+
     }
 
-    public FirebaseAuth getFirebaseAuth() {
-        return firebaseAuth;
-    }
-
-    public void registerUser(Activity activity, String username, String email, String password, String phoneNumber) {
+    public void registerUser(Context context, String username, String email, String password, String phoneNumber) {
         firebaseAuth.createUserWithEmailAndPassword(email, password)
-                .addOnCompleteListener(activity, task -> {
+                .addOnCompleteListener((Activity) context, task -> {
                     if (task.isSuccessful() && firebaseAuth.getCurrentUser() != null) {
-                        database.createUser(username, email, phoneNumber);
+                        database.createUser(username, email,phoneNumber);
+                        verifyEmail(context);
+                        Toast.makeText(context, "User successfully registered", Toast.LENGTH_LONG).show();
+                        Intent loginPage = new Intent(context, LoginActivityController.class);
+                        context.startActivity(loginPage);
+                        ((Activity) context).finish();
                     } else {
-                        System.out.println(task.getException().getMessage());
+                        Toast.makeText(context, task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
     }
@@ -61,10 +71,36 @@ public class AuthenticationManager {
 
     }
 
+    public boolean isUsernameAlphaNumeric(String username){
+        boolean isDigit = false, isAlphabetic = false;
+        if(username.length() > usernameLengthLimit) return false;
 
-    public boolean isEmailValid(String email) {
-        return Patterns.EMAIL_ADDRESS.matcher(email).matches();
+        for (int i = 0; i< username.length();i++){
+            char character = username.charAt(i);
+            if(Character.isDigit(character)){
+                isDigit = true;
+            }else if(Character.isAlphabetic(character)){
+                isAlphabetic = true;
+            }
+            if(isDigit && isAlphabetic) return true;
+        }
+        return false;
+    }
 
+    public boolean isEmailValid(String email){
+        Pattern pattern = Pattern.compile(emailPatternValidation);
+        Matcher matcher = pattern.matcher(email);
+        return matcher.find();
+    }
+
+    private void verifyEmail(Context context){
+        Objects.requireNonNull(this.firebaseAuth.getCurrentUser()).sendEmailVerification().addOnCompleteListener(emailTask -> {
+            if(emailTask.isSuccessful()){
+                Toast.makeText(context, "Email verification has been send", Toast.LENGTH_SHORT).show();
+            }else{
+                Toast.makeText(context,"There was a problem with your email verification",Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     public boolean isPhoneNumberValid(String phoneNumber) {
@@ -76,7 +112,8 @@ public class AuthenticationManager {
     }
 
     public boolean isPasswordValidated(@NonNull String password) {
-        return password.length() >= 8 && validateCharacters(password);
+        int minimumPasswordLength = 8;
+        return password.length() >= minimumPasswordLength && validateCharacters(password);
     }
 
     private boolean validateCharacters(@NonNull String password) {
