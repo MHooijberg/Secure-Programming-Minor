@@ -51,22 +51,6 @@ public class FirebaseManager {
         firebaseMessagingInstance = FirebaseMessaging.getInstance();
     }
 
-    public void DatabaseReadExample() throws InterruptedException, ExecutionException
-    {
-        DocumentReference docRef = firestoreInstance.collection("Guilds").document("SampleGuild");
-        // asynchronously retrieve the document
-        ApiFuture<DocumentSnapshot> future = docRef.get();
-        // future.get() blocks on response
-        DocumentSnapshot document = future.get();
-        if (document.exists())
-        {
-            System.out.println("Document data: " + document.getData());
-        }else
-        {
-            System.out.println("No such document!");
-        }
-    }
-
 
     public void FCMDirectExample(String registrationToken){
         // This registration token comes from the client FCM SDKs.

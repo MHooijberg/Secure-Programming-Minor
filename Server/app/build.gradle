@@ -25,6 +25,8 @@ dependencies {
 
     // This dependency is used by the applications backend services.
     implementation 'com.google.firebase:firebase-admin:9.1.1';
+
+    
 }
 
 application {
