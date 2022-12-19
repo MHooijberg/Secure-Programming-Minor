@@ -7,11 +7,14 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.chatsystemfordevs.R;
 import com.example.chatsystemfordevs.Utilities.AuthenticationManager;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 
 import java.util.Observable;
 import java.util.Observer;
@@ -25,7 +28,7 @@ public class RegistrationActivityController extends AppCompatActivity implements
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_registrationview);
-        authenticationManager = new AuthenticationManager();
+        this.authenticationManager = new AuthenticationManager();
         this.button = findViewById(R.id.NextButton);
         this.username = findViewById(R.id.EditUsername);
         this.email = findViewById(R.id.UserEmailAddress);
@@ -48,25 +51,28 @@ public class RegistrationActivityController extends AppCompatActivity implements
             String repeatPass = repeatablePassword.getText().toString();
 
             if (!TextUtils.isEmpty(usr) && !TextUtils.isEmpty(usrEmail) && !TextUtils.isEmpty(phoneInput) && !TextUtils.isEmpty(pass)) {
-                if (authenticationManager.isEmailValid(usrEmail) && authenticationManager.isPhoneNumberValid(phoneInput)
+                if (authenticationManager.isUsernameAlphaNumeric(usr)
+                        && authenticationManager.isEmailValid(usrEmail)
+                        && authenticationManager.isPhoneNumberValid(phoneInput)
                         && authenticationManager.isPasswordValidated(pass)
                         && authenticationManager.isPasswordEqual(pass, repeatPass)) {
-                    authenticationManager.registerUser(RegistrationActivityController.this, usr, usrEmail, pass, phoneInput);
-                    Toast.makeText(this, "User successfully registered", Toast.LENGTH_LONG).show();
-                    Intent loginPage = new Intent(this, LoginActivityController.class);
-                    startActivity(loginPage);
-                }
-                if (!authenticationManager.isEmailValid(usrEmail)) {
-                    email.setError("Incorrect email format");
-                }
-                if (!authenticationManager.isPhoneNumberValid(phoneInput)) {
-                    phoneNumber.setError("Incorrect phone format");
-                }
-                if (!authenticationManager.isPasswordValidated(pass)) {
-                    password.setError("Password needs to contain at least 8 characters. \n" + "one uppercase and one lowercase character. \n" + "All passwords must contain at least one number. \n" + "All passwords must contain at least one special character.");
-                }
-                if (!authenticationManager.isPasswordEqual(pass, repeatPass)) {
-                    repeatablePassword.setError("The password is not the same");
+                    authenticationManager.registerUser(this, usr, usrEmail, pass, phoneInput);
+                }else{
+                    if(!authenticationManager.isUsernameAlphaNumeric(usr)){
+                        this.username.setError("Username needs to be less than 15.\nUsername needs to be alphanumeric");
+                    }
+                    if (!authenticationManager.isEmailValid(usrEmail)) {
+                        this.email.setError("Incorrect email format");
+                    }
+                    if (!authenticationManager.isPhoneNumberValid(phoneInput)) {
+                        this.phoneNumber.setError("Incorrect phone format");
+                    }
+                    if (!authenticationManager.isPasswordValidated(pass)) {
+                        this.password.setError("Password needs to contain at least 8 characters. \n" + "One uppercase and one lowercase character. \n" + "All passwords must contain at least one number. \n" + "All passwords must contain at least one special character.");
+                    }
+                    if (!authenticationManager.isPasswordEqual(pass, repeatPass)) {
+                        this.repeatablePassword.setError("The password is not the same");
+                    }
                 }
             } else {
                 Toast.makeText(this, "Input fields are empty", Toast.LENGTH_LONG).show();
