@@ -1,7 +1,6 @@
 package com.example.chatsystemfordevs.Utilities;
 
 import static com.google.firebase.appcheck.internal.util.Logger.TAG;
-
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -9,15 +8,10 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.util.Patterns;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
-
 import com.example.chatsystemfordevs.Controller.GuildServerController;
-import com.google.firebase.auth.FirebaseAuth;
-
-import java.util.Objects;
 import com.example.chatsystemfordevs.Controller.LoginActivityController;
-
+import com.google.firebase.auth.FirebaseAuth;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -65,10 +59,6 @@ public class AuthenticationManager {
                         Log.d(TAG, task.getException().getMessage());
                     }
                 });
-    }
-
-    public void resetPassword(String email, String password) {
-
     }
 
     public boolean isUsernameAlphaNumeric(String username){

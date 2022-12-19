@@ -22,7 +22,7 @@ public class LoginActivityController extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_loginview);
         this.authenticationManager = new AuthenticationManager();
-        this.username = findViewById(R.id.LoginUsername);
+        this.username = findViewById(R.id.LoginEmail);
         this.password = findViewById(R.id.LoginPassword);
         this.loginButton = findViewById(R.id.next);
         authenticateUser();

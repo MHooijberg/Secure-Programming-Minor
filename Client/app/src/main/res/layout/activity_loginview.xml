@@ -62,12 +62,12 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="44dp"
         android:layout_marginTop="12dp"
-        android:text="@string/username"
+        android:text="@string/email"
         app:layout_constraintStart_toStartOf="@+id/guideline2"
         app:layout_constraintTop_toBottomOf="@+id/textView2" />
 
     <EditText
-        android:id="@+id/LoginUsername"
+        android:id="@+id/LoginEmail"
         style="@style/Widget.AppCompat.EditText"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -75,8 +75,8 @@
         android:layout_marginEnd="44dp"
         android:autofillHints="username"
         android:ems="10"
-        android:hint="@string/username"
-        android:inputType="textPersonName"
+        android:hint="@string/email"
+        android:inputType="textEmailAddress"
         android:minHeight="48dp"
         app:layout_constraintEnd_toStartOf="@+id/guideline3"
         app:layout_constraintStart_toStartOf="@+id/guideline2"
@@ -90,7 +90,7 @@
         android:layout_marginTop="16dp"
         android:text="@string/password"
         app:layout_constraintStart_toStartOf="@+id/guideline2"
-        app:layout_constraintTop_toBottomOf="@+id/LoginUsername" />
+        app:layout_constraintTop_toBottomOf="@+id/LoginEmail" />
 
     <EditText
         android:id="@+id/LoginPassword"
