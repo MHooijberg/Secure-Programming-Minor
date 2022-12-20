@@ -9,6 +9,14 @@ public class App {
     public static void main(String[] args) throws UnsupportedOperationException, InterruptedException, ExecutionException {
         FirebaseManager firebaseManager = new FirebaseManager();
         firebaseManager.InitializeFirebase();
-        
+        int count = 0;
+        while (true)
+        {
+            if (count == 0)
+            {
+                count++;
+                System.out.println("Stuck in a loop!");
+            }
+        }
     }
 }
