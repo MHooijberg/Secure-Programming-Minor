@@ -1,8 +1,8 @@
-package devlink_server;
+package DevLink_Server;
 
 public class GitHubManager implements APIManager {
 
-    public void GitHubManager(){
+    public GitHubManager(){
                 // TODO: Create a constructor.
     }
 

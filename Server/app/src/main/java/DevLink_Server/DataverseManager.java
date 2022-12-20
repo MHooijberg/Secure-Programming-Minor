@@ -1,8 +1,8 @@
-package devlink_server;
+package DevLink_Server;
 
 public class DataverseManager implements APIManager {
 
-    public void DataverseManager(){
+    public DataverseManager(){
                 // TODO: Create a constructor.
     }
 

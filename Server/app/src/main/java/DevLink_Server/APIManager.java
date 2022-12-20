@@ -1,4 +1,4 @@
-package devlink_server;
+package DevLink_Server;
 
 public interface APIManager {
     void RequestBuilder();

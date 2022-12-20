@@ -1,9 +1,7 @@
-package devlink_server;
-
-import java.util.Stack;
+package DevLink_Server;
 
 public class StackExchangeManager implements APIManager {
-    public void StackExchangeManager(){
+    public StackExchangeManager(){
         // TODO: Create a constructor.
     }
 

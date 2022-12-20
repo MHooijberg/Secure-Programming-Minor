@@ -4,6 +4,9 @@
 package devlink_server;
 
 import org.testng.annotations.*;
+
+import DevLink_Server.App;
+
 import static org.testng.Assert.*;
 
 public class AppTest {
