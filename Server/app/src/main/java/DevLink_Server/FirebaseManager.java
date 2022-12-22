@@ -397,5 +397,23 @@ public class FirebaseManager {
             );
         // [END firestore_listen_document]
         return future.get(30, TimeUnit.SECONDS);
-    } 
+    }
+
+    private String GetUserRegistrationToken(DocumentReference user) throws InterruptedException, ExecutionException {
+        String registrationToken = null;
+        // asynchronously retrieve the document
+        ApiFuture<DocumentSnapshot> future = user.get();
+        // future.get() blocks on response
+        DocumentSnapshot document = future.get();
+        if (document.exists())
+        {
+            System.out.println("Document data: " + document.getData());
+            registrationToken = document.getString("registrationToken");
+        }
+        else
+        {
+            System.out.println("No such document!");
+        }
+        return registrationToken;
+    }
 }
