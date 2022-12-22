@@ -44,6 +44,36 @@
         <item>Aspernatur reiciendis ut quia impedit iusto nobis. Omnis laudantium velit ex itaque est sunt et. Fugit aut doloremque rerum laborum. Non ea veniam dolorem veritatis reprehenderit reprehenderit voluptatem facilis. Alias laborum voluptatibus quia vel. Sunt id neque deserunt</item>
     </string-array>
 
+    <string-array name="room_names">
+        <item>Room name 1</item>
+        <item>Room name 2</item>
+        <item>Room name 3</item>
+        <item>Room name 4</item>
+        <item>Room name 5</item>
+        <item>Room name 6</item>
+        <item>Room name 7</item>
+        <item>Room name 8</item>
+        <item>Room name 9</item>
+        <item>Room name 10</item>
+        <item>Room name 11</item>
+        <item>Room name 12</item>
+    </string-array>
+
+    <string-array name="guild_names">
+        <item>Guild name 1</item>
+        <item>Guild name 2</item>
+        <item>Guild name 3</item>
+        <item>Guild name 4</item>
+        <item>Guild name 1</item>
+        <item>Guild name 2</item>
+        <item>Guild name 3</item>
+        <item>Guild name 4</item>
+        <item>Guild name 1</item>
+        <item>Guild name 2</item>
+        <item>Guild name 3</item>
+        <item>Guild name 4</item>
+    </string-array>
+
     <string name="app_name">ChatSystemForDevs</string>
     <string name="login">Login</string>
     <string name="username">Username</string>
