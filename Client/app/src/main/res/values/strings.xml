@@ -1,3 +1,19 @@
 <resources>
     <string name="app_name">ChatSystemForDevs</string>
+    <string name="login">Login</string>
+    <string name="username">Username</string>
+    <string name="forgot_password">Forgot Password?</string>
+    <string name="next">Next</string>
+    <string name="back">Back</string>
+    <string name="password">Password</string>
+    <string name="register">Register</string>
+    <string name="repeat_password">Repeat password</string>
+    <string name="email">Email</string>
+    <string name="phone_number">Phone number</string>
+    <string name="_2fa">2FA</string>
+    <string name="send_otp">Send OTP</string>
+    <string name="otp">OTP</string>
+    <string name="logo_of_the_application">Logo of the application</string>
+    <string name="no_account">No account?</string>
+    <string name="register_an_account">Register an account</string>
 </resources>
