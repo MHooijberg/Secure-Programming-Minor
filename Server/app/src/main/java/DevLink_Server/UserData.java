@@ -9,13 +9,13 @@ public class UserData {
     private List<DocumentReference> guilds;
     private boolean isOnline;
     private String phoneNumber;
-    private String registrationToken;
+    private List<String> registrationToken;
     private String username;
 
     // [START firestore_data_custom_type_definition]
     public UserData(){}
 
-    public UserData(String email, List<DocumentReference> guilds, boolean isOnline, String phoneNumber, String registrationToken, String username)
+    public UserData(String email, List<DocumentReference> guilds, boolean isOnline, String phoneNumber, List<String> registrationToken, String username)
     {
         this.email = email;
         this.guilds = guilds;
@@ -31,7 +31,8 @@ public class UserData {
         this.guilds.add(guild);
         this.isOnline = isOnline;
         this.phoneNumber = phoneNumber;
-        this.registrationToken = registrationToken;
+        this.registrationToken = new ArrayList<String>();
+        this.registrationToken.add(registrationToken);
         this.username = username;
     }
     // [END firestore_data_custom_type_definition]
@@ -64,11 +65,15 @@ public class UserData {
     public void setPhoneNumber(String phoneNumber){
         this.phoneNumber = phoneNumber;
     }
-    public String getRegistrationToken(){
+    public List<String> getRegistrationToken(){
         return registrationToken;
     }
-    public void setRegistrationToken(String registrationToken){
+    public void setRegistrationToken(List<String> registrationToken){
         this.registrationToken = registrationToken;
+    }
+    public void setRegistrationToken(String registrationToken){
+        this.registrationToken = new ArrayList<String>();
+        this.registrationToken.add(registrationToken);
     }
     public String getUsername(){
         return username;

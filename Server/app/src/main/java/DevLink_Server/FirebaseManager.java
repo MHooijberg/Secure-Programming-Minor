@@ -10,11 +10,16 @@ import com.google.cloud.firestore.DocumentReference;
 import com.google.cloud.firestore.DocumentSnapshot;
 import com.google.cloud.firestore.Firestore;
 import com.google.firebase.cloud.FirestoreClient;
+import com.google.firebase.messaging.AndroidConfig;
+import com.google.firebase.messaging.AndroidNotification;
 import com.google.firebase.messaging.BatchResponse;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.FirebaseMessagingException;
 import com.google.firebase.messaging.Message;
 import com.google.firebase.messaging.MulticastMessage;
+import com.google.firebase.messaging.Notification;
+import com.google.firebase.messaging.SendResponse;
+import com.google.firebase.messaging.MulticastMessage.Builder;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
 import java.util.Map;
@@ -46,12 +51,17 @@ import com.google.cloud.firestore.DocumentChange.Type;
 import com.google.cloud.storage.Acl.User;
 import com.google.cloud.firestore.ListenerRegistration;
 import com.google.cloud.firestore.Query;
+import com.google.cloud.firestore.QueryDocumentSnapshot;
 import com.google.cloud.firestore.QuerySnapshot;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class FirebaseManager {
+    // Firebase Settings and Constants:
+    private static final int MESSAGE_TTL = 3600*24*7;
+
+    // Private variables
     private DataverseManager dataverseManager;
     private Firestore firestoreInstance;
     private FirebaseMessaging firebaseMessagingInstance;
@@ -97,14 +107,15 @@ public class FirebaseManager {
     }
 
 
-    public void FCMDirectExample(String registrationToken){
-        // This registration token comes from the client FCM SDKs.
-        //String registrationToken = "YOUR_REGISTRATION_TOKEN";
-
-        // See documentation on defining a message payload.
+    // If we do not send messages to a single person this method could be depricated.
+    public void FCMSendDirect(String registrationToken, FCMMessageData.ObjectType objectType, String objectId){
+        // The following information need to be send over:
+        // Action: Create, Read, Update, Delete
+        // Objects Type: Channel, Guild, Message or User
         Message message = Message.builder()
-            .putData("Message", "This is some custom message content")
-            .putData("Recipient", "Georgie is the recipient")
+            .putData("action", "update")
+            .putData("object type", objectType.name().toLowerCase())
+            .putData("object id", objectId)
             .setToken(registrationToken)
             .build();
 
@@ -121,12 +132,20 @@ public class FirebaseManager {
         System.out.println("Successfully sent message: " + response);
     }
 
-    public void FCMMulticastExample(List<String> registrationTokens){
+    public void FCMSendMulticast(List<String> registrationTokens, FCMMessageData.ObjectType objectType, String objectId){
+        // The following information need to be send over:
+        // Action: Create, Read, Update, Delete
+        // Objects Type: Channel, Guild, Message or User
         MulticastMessage message = MulticastMessage.builder()
-            .putData("score", "850")
-            .putData("time", "2:45")
+            .putData("action", "update")
+            .putData("object type", objectType.name().toLowerCase())
+            .putData("object id", objectId)
             .addAllTokens(registrationTokens)
-            .build();
+            .setAndroidConfig(AndroidConfig.builder()
+                .setTtl(MESSAGE_TTL)
+                .build())
+            .build();        
+
         BatchResponse response = null;
         try {
             response = firebaseMessagingInstance.sendMulticast(message);
@@ -139,6 +158,7 @@ public class FirebaseManager {
         if (response != null)
             System.out.println(response.getSuccessCount() + " messages were sent successfully");
 
+        // TODO: Uncomment the following code block if it is desired to handle non received messages. Such as a message delivery confirmation feature.
         // if (response.getFailureCount() > 0) {
         //     List<SendResponse> responses = response.getResponses();
         //     List<String> failedTokens = new ArrayList<>();
@@ -148,30 +168,66 @@ public class FirebaseManager {
         //         failedTokens.add(registrationTokens.get(i));
         //         }
         //     }
+        // }
     }
 
-    public void FCMTopicExample(String topic ){
-    // The topic name can be optionally prefixed with "/topics/".
-    //String topic = "highScores";
+    public void FCMSendMulticast(FCMMessageData messageData){
+        // The following information need to be send over:
+        // Action: Create, Read, Update, Delete
+        // Objects Type: Channel, Guild, Message or User
+        Builder messageBuilder = MulticastMessage.builder()
+            .putData("action", "update")
+            .putData("object type", messageData.getObjectType().name().toLowerCase())
+            .putData("object id", messageData.getObjectId())
+            .addAllTokens(messageData.getRegistrationTokens()));
 
-    // See documentation on defining a message payload.
-    Message message = Message.builder()
-        .putData("score", "850")
-        .putData("time", "2:45")
-        .setTopic(topic)
-        .build();
+        if (messageData.getHasNotification())
+            messageBuilder
+                .setAndroidConfig(
+                    AndroidConfig.builder()
+                        .setTtl(MESSAGE_TTL)
+                        .setNotification(
+                            AndroidNotification.builder()
+                            // Note: More customisations to the notificiation can be added here.
+                                .setColor(messageData.getNotificationColor())
+                                .setIcon(messageData.getNotificationIcon())
+                                .build())
+                        .build())
+                .setNotification(
+                    Notification.builder()
+                        .setBody(messageData.getNotificationBody())
+                        .setTitle(messageData.getNotificationTitle())
+                        .build());
+        else
+            messageBuilder.setAndroidConfig(
+                AndroidConfig.builder()
+                .setTtl(MESSAGE_TTL)
+                .build());
 
-    // Send a message to the devices subscribed to the provided topic.
-    String response = null;
-    try {
-        response = firebaseMessagingInstance.send(message);
-        
-    } catch (FirebaseMessagingException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
-    }
-    // Response is a message ID string.
-    System.out.println("Successfully sent message: " + response);
+        MulticastMessage message = messageBuilder.build();
+        BatchResponse response = null;
+        try {
+            response = firebaseMessagingInstance.sendMulticast(message);
+        } catch (FirebaseMessagingException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        // See the BatchResponse reference documentation
+        // for the contents of response.
+        if (response != null)
+            System.out.println(response.getSuccessCount() + " messages were sent successfully");
+
+        // TODO: Uncomment the following code block if it is desired to handle non received messages. Such as a message delivery confirmation feature.
+        // if (response.getFailureCount() > 0) {
+        //     List<SendResponse> responses = response.getResponses();
+        //     List<String> failedTokens = new ArrayList<>();
+        //     for (int i = 0; i < responses.size(); i++) {
+        //         if (!responses.get(i).isSuccessful()) {
+        //         // The order of responses corresponds to the order of the registration tokens.
+        //         failedTokens.add(registrationTokens.get(i));
+        //         }
+        //     }
+        // }
     }
 
     public void DatabaseReadExample() throws InterruptedException, ExecutionException
@@ -194,7 +250,7 @@ public class FirebaseManager {
         final SettableApiFuture<List<ChannelData>> future = SettableApiFuture.create();
 
         // [START firestore_listen_document]
-        firestoreInstance.collectionGroup("Guilds")
+        firestoreInstance.collectionGroup("Channels")
             .addSnapshotListener(
                 new EventListener<QuerySnapshot>()
                 {
@@ -207,20 +263,30 @@ public class FirebaseManager {
                             return;
                         }
 
-                        // TODO: Create a class / abstract to hold the message data.
-                        List<ChannelData> channelChanges = new ArrayList<>();
-                        var documents = snapshot.getDocumentChanges();
+                        List<QueryDocumentSnapshot> documents = snapshot.getDocuments();
+                        List<ChannelData> channelChanges = snapshot.toObjects(ChannelData.class);
                         if (!isLoading)
                         {
                             if (documents.size() > 0)
                             {
-                                channelChanges = snapshot.toObjects(ChannelData.class);
                                 // Prevent any actions to be done when the code is loading the first local datasets.
                                 if (!isLoading)
                                 {
-                                    for (ChannelData channel : channelChanges)
+                                    for (QueryDocumentSnapshot channel : documents)
                                     {
                                         // TODO: Handle channel changes.
+                                        ApiFuture<DocumentSnapshot> nearFuture = channel.getReference().getParent().getParent().get();
+                                        DocumentSnapshot guildSnapshot;
+                                        List<DocumentReference> userReferences = null;
+                                        try
+                                        {
+                                            guildSnapshot = nearFuture.get();
+                                            if (guildSnapshot != null)
+                                                userReferences = (List<DocumentReference>) guildSnapshot.get("users");
+                                                if (userReferences != null || userReferences.size() > 0)
+                                                    FCMSendMulticast(GetUserRegistrationTokens(userReferences), FCMMessageData.ObjectType.CHANNEL, channel.getId());
+                                        }
+                                        catch (InterruptedException | ExecutionException e1) { e1.printStackTrace(); }
                                     }
                                 }
                             }
@@ -269,6 +335,16 @@ public class FirebaseManager {
                                 for (GuildData guild : guildChanges)
                                 {
                                     // TODO: Handle guild changes.
+                                    try {
+                                        List<String> userRegistrationTokens = GetUserRegistrationTokens(guild.getUsers());
+
+                                    } catch (InterruptedException e1) {
+                                        // TODO Auto-generated catch block
+                                        e1.printStackTrace();
+                                    } catch (ExecutionException e1) {
+                                        // TODO Auto-generated catch block
+                                        e1.printStackTrace();
+                                    }
                                 }
                             }
                         }
@@ -399,8 +475,8 @@ public class FirebaseManager {
         return future.get(30, TimeUnit.SECONDS);
     }
 
-    private String GetUserRegistrationToken(DocumentReference user) throws InterruptedException, ExecutionException {
-        String registrationToken = null;
+    private List<String> GetUserRegistrationTokens(DocumentReference user) throws InterruptedException, ExecutionException {
+        List<String> registrationTokens = new ArrayList<String>();
         // asynchronously retrieve the document
         ApiFuture<DocumentSnapshot> future = user.get();
         // future.get() blocks on response
@@ -408,11 +484,37 @@ public class FirebaseManager {
         if (document.exists())
         {
             System.out.println("Document data: " + document.getData());
-            registrationToken = document.getString("registrationToken");
+            registrationTokens = (List<String>) document.get("registrationToken");
         }
         else
         {
             System.out.println("No such document!");
+        }
+        return registrationTokens;
+    }
+
+    private List<String> GetUserRegistrationTokens(List<DocumentReference> users) throws InterruptedException, ExecutionException {
+        List<String> registrationToken = new ArrayList<String>();
+
+        for (DocumentReference user : users)
+        {
+            // asynchronously retrieve the document
+            ApiFuture<DocumentSnapshot> future = user.get();
+            // future.get() blocks on response
+            DocumentSnapshot document = future.get();
+            if (document.exists())
+            {
+                System.out.println("Document data: " + document.getData());
+                List<String> userTokenList = (List<String>) document.get("registrationToken");
+                for(String token : userTokenList)
+                {
+                    registrationToken.add(token);
+                }
+            }
+            else
+            {
+                System.out.println("No such document!");
+            }
         }
         return registrationToken;
     }
