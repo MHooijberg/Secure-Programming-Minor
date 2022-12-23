@@ -591,10 +591,7 @@ public class FirebaseManager {
             {
                 //System.out.println("Document data: " + document.getData());
                 List<String> userTokenList = (List<String>) document.get("registrationToken");
-                for(String token : userTokenList)
-                {
-                    registrationToken.add(token);
-                }
+                registrationToken.addAll(userTokenList);
             }
             else
             {
