@@ -72,6 +72,8 @@
             android:id="@+id/edit_message"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:paddingStart="4dp"
+            android:paddingEnd="4dp"
             android:layout_alignParentTop="true"
             android:layout_marginStart="10dp"
             android:layout_toStartOf="@+id/send_button"

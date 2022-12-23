@@ -15,7 +15,7 @@
         <item name="android:textColorLink">?attr/colorSecondary</item>
         <item name="android:subtitleTextColor">?attr/subtitleTextColor</item>
         <item name="android:editTextColor">?attr/colorOnPrimary</item>
-        <item name="android:editTextBackground">?attr/colorPrimaryVariant</item>
+        <item name="android:editTextBackground">@drawable/edit_text_shape</item>
         <item name="android:textColorHint">?attr/subtitleTextColor</item>
 
         <!-- Status bar color -->

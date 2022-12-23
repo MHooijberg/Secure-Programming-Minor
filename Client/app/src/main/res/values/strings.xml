@@ -116,4 +116,5 @@
     <string name="someemailaddress_domain_com">someemailaddress@domain.com</string>
     <string name="username_here">username_here</string>
     <string name="settings">Settings</string>
+    <string name="reset_password">Reset Password</string>
 </resources>

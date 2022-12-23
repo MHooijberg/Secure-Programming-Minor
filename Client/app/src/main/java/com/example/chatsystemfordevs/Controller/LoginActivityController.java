@@ -22,6 +22,10 @@ public class LoginActivityController extends AppCompatActivity {
         this.finish();
     }
 
+    public void onForgetPasswordTextClick(View view){
+        startActivity(new Intent(this, ResetPasswordActivityController.class));
+    }
+
     public void onNextButtonClick(View view){
         startActivity(new Intent(this, OTPActivityController.class));
     }
