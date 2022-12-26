@@ -1,7 +1,9 @@
 package com.example.chatsystemfordevs.Controller;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -42,5 +44,13 @@ public class LoginActivityController extends AppCompatActivity {
                 Toast.makeText(this, "Some of the input fields are empty", Toast.LENGTH_SHORT).show();
             }
         });
+
+        public void onBackTextClick(View view){
+            this.finish();
+        }
+
+        public void onForgetPasswordTextClick(View view){
+            startActivity(new Intent(this, ResetPasswordActivityController.class));
+        }
     }
 }

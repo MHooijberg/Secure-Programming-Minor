@@ -1,4 +1,79 @@
 <resources>
+    <string-array name="message_usernames">
+        <item>Username1</item>
+        <item>Username2</item>
+        <item>Username3</item>
+        <item>Username1</item>
+        <item>Username2</item>
+        <item>Username3</item>
+        <item>Username1</item>
+        <item>Username2</item>
+        <item>Username3</item>
+        <item>Username1</item>
+        <item>Username2</item>
+        <item>Username3</item>
+    </string-array>
+
+    <string-array name="message_dates">
+        <item>2022-03-01 15:51</item>
+        <item>2022-03-02 15:51</item>
+        <item>2022-03-02 21:04</item>
+        <item>2022-03-01 15:51</item>
+        <item>2022-03-02 15:51</item>
+        <item>2022-03-02 21:04</item>
+        <item>2022-03-01 15:51</item>
+        <item>2022-03-02 15:51</item>
+        <item>2022-03-02 21:04</item>
+        <item>2022-03-01 15:51</item>
+        <item>2022-03-02 15:51</item>
+        <item>2022-03-02 21:04</item>
+    </string-array>
+
+    <string-array name="message_messages">
+        <item>Wowzers, this is a message</item>
+        <item>This is so cool isn\'t it</item>
+        <item>Aspernatur reiciendis ut quia impedit iusto nobis. Omnis laudantium velit ex itaque est sunt et. Fugit aut doloremque rerum laborum. Non ea veniam dolorem veritatis reprehenderit reprehenderit voluptatem facilis. Alias laborum voluptatibus quia vel. Sunt id neque deserunt</item>
+        <item>Wowzers, this is a message</item>
+        <item>This is so cool isn\'t it</item>
+        <item>Aspernatur reiciendis ut quia impedit iusto nobis. Omnis laudantium velit ex itaque est sunt et. Fugit aut doloremque rerum laborum. Non ea veniam dolorem veritatis reprehenderit reprehenderit voluptatem facilis. Alias laborum voluptatibus quia vel. Sunt id neque deserunt</item>
+        <item>Wowzers, this is a message</item>
+        <item>This is so cool isn\'t it</item>
+        <item>Aspernatur reiciendis ut quia impedit iusto nobis. Omnis laudantium velit ex itaque est sunt et. Fugit aut doloremque rerum laborum. Non ea veniam dolorem veritatis reprehenderit reprehenderit voluptatem facilis. Alias laborum voluptatibus quia vel. Sunt id neque deserunt</item>
+        <item>Wowzers, this is a message</item>
+        <item>This is so cool isn\'t it</item>
+        <item>Aspernatur reiciendis ut quia impedit iusto nobis. Omnis laudantium velit ex itaque est sunt et. Fugit aut doloremque rerum laborum. Non ea veniam dolorem veritatis reprehenderit reprehenderit voluptatem facilis. Alias laborum voluptatibus quia vel. Sunt id neque deserunt</item>
+    </string-array>
+
+    <string-array name="room_names">
+        <item>Room name 1</item>
+        <item>Room name 2</item>
+        <item>Room name 3</item>
+        <item>Room name 4</item>
+        <item>Room name 5</item>
+        <item>Room name 6</item>
+        <item>Room name 7</item>
+        <item>Room name 8</item>
+        <item>Room name 9</item>
+        <item>Room name 10</item>
+        <item>Room name 11</item>
+        <item>Room name 12</item>
+    </string-array>
+
+    <string-array name="guild_names">
+        <item>Guild name 1</item>
+        <item>Guild name 2</item>
+        <item>Guild name 3</item>
+        <item>Guild name 4</item>
+        <item>Guild name 1</item>
+        <item>Guild name 2</item>
+        <item>Guild name 3</item>
+        <item>Guild name 4</item>
+        <item>Guild name 1</item>
+        <item>Guild name 2</item>
+        <item>Guild name 3</item>
+        <item>Guild name 4</item>
+    </string-array>
+
     <string name="app_name">ChatSystemForDevs</string>
     <string name="login">Login</string>
     <string name="username">Username</string>
@@ -16,4 +91,30 @@
     <string name="logo_of_the_application">Logo of the application</string>
     <string name="no_account">No account?</string>
     <string name="register_an_account">Register an account</string>
+    <string name="UsernameTextInfo">Username</string>
+    <string name="PasswordText">Password</string>
+    <string name="repeatPasswordText">Repeat Password</string>
+    <string name="EmailText">Email</string>
+    <string name="UsernameHint">Username</string>
+    <string name="EmailHint">Email</string>
+    <string name="PasswordHint">Password</string>
+    <string name="PhoneNumber">PhoneNumber</string>
+    <string name="guild_image">Guild image</string>
+    <string name="user_image">User image</string>
+    <string name="search_icon">Search Icon</string>
+    <string name="guild_name">Guild name</string>
+    <string name="plus_icon">Plus icon</string>
+    <string name="gear_icon">Gear icon</string>
+    <string name="github_logo">Github logo</string>
+    <string name="github_api">GitHub API</string>
+    <string name="stackoverflow_logo">Stackoverflow logo</string>
+    <string name="stackoverflow_api">StackOverflow API</string>
+    <string name="logged_in_user_image">Logged in user image</string>
+    <string name="enter_message">Enter Message</string>
+    <string name="change_password">Change password</string>
+    <string name="change_phone_number">Change phone number</string>
+    <string name="someemailaddress_domain_com">someemailaddress@domain.com</string>
+    <string name="username_here">username_here</string>
+    <string name="settings">Settings</string>
+    <string name="reset_password">Reset Password</string>
 </resources>

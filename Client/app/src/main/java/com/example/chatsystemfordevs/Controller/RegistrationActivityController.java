@@ -3,6 +3,7 @@ package com.example.chatsystemfordevs.Controller;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -28,14 +29,18 @@ public class RegistrationActivityController extends AppCompatActivity implements
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_registrationview);
-        this.authenticationManager = new AuthenticationManager();
-        this.button = findViewById(R.id.NextButton);
-        this.username = findViewById(R.id.EditUsername);
-        this.email = findViewById(R.id.UserEmailAddress);
-        this.password = findViewById(R.id.UserPassword);
-        this.phoneNumber = findViewById(R.id.UserPhoneNumber);
-        this.repeatablePassword = findViewById(R.id.UserRepeatedPassword);
+        authenticationManager = new AuthenticationManager();
+        this.button = findViewById(R.id.next_button_register);
+        this.username = findViewById(R.id.username_edit_text);
+        this.email = findViewById(R.id.email_edit_text);
+        this.password = findViewById(R.id.password_edit_text);
+        this.phoneNumber = findViewById(R.id.phone_number_edit_text);
+        this.repeatablePassword = findViewById(R.id.repeat_password_edit_text);
         registerUser();
+    }
+
+    public void onBackTextClick(View view){
+        this.finish();
     }
 
     @Override
