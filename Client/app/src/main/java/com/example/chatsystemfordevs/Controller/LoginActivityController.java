@@ -1,12 +1,13 @@
 package com.example.chatsystemfordevs.Controller;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
+import android.view.View;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -24,9 +25,9 @@ public class LoginActivityController extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_loginview);
         this.authenticationManager = new AuthenticationManager();
-        this.username = findViewById(R.id.LoginEmail);
-        this.password = findViewById(R.id.LoginPassword);
-        this.loginButton = findViewById(R.id.next);
+        this.username = findViewById(R.id.email_edit_text);
+        this.password = findViewById(R.id.password_edit_text);
+        this.loginButton = findViewById(R.id.next_button);
         authenticateUser();
     }
 
@@ -45,12 +46,14 @@ public class LoginActivityController extends AppCompatActivity {
             }
         });
 
-        public void onBackTextClick(View view){
-            this.finish();
-        }
 
-        public void onForgetPasswordTextClick(View view){
-            startActivity(new Intent(this, ResetPasswordActivityController.class));
-        }
+    }
+
+    public void onBackTextClick(View view){
+        this.finish();
+    }
+
+    public void onForgetPasswordTextClick(View view){
+        startActivity(new Intent(this, ResetPasswordActivityController.class));
     }
 }
