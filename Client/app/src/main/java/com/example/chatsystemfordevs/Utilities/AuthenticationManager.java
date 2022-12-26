@@ -21,6 +21,7 @@ public class AuthenticationManager {
     private final DBHelper database;
     private static final String emailPatternValidation = "^(?=.{1,64}@)[A-Za-z0-9_-]+(\\.[A-Za-z0-9_-]+)*@"
             + "[^-][A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[A-Za-z]{2,})$";
+    private final Pattern illegalCharacters = Pattern.compile("[\\/.<>+*@&()^!\"#$%':;=?_`{}|~]");
     private static final int usernameLengthLimit = 15;
 
     public AuthenticationManager() {
@@ -62,6 +63,9 @@ public class AuthenticationManager {
     }
 
     public boolean isUsernameAlphaNumeric(String username){
+        if(illegalCharacters.matcher(username).find()){
+            return false;
+        }
         boolean isDigit = false, isAlphabetic = false;
         if(username.length() > usernameLengthLimit) return false;
 

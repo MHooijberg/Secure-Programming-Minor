@@ -1,26 +1,40 @@
 package com.example.chatsystemfordevs.Utilities;
 
+import static android.service.controls.ControlsProviderService.TAG;
+
 import android.util.Log;
+
+import com.example.chatsystemfordevs.User.User;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.messaging.FirebaseMessaging;
+
+import java.util.concurrent.Executor;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
 public class DBHelper {
     private final FirebaseFirestore database;
-
     public DBHelper() {
         this.database = FirebaseFirestore.getInstance();
     }
 
     public void createUser(String username, String email, String phoneNumber) {
-        Map<String, Object> user = new HashMap<>();
-        user.put("Email", email);
-        user.put("Guild", null);
-        user.put("isOnline", true);
-        user.put("Phone Number", phoneNumber);
-        user.put("Username", username);
+        //Initialize the FCM token generation
+        FirebaseMessaging.getInstance().getToken().addOnCompleteListener(task -> {
+            if (!task.isSuccessful()) {
+                Log.w(TAG, "Fetching FCM registration token failed", task.getException());
+            }else{
 
-        this.database.collection("Users").add(user).addOnSuccessListener(documentReference
-                -> Log.d("State","A user has been added")).addOnFailureListener(e -> System.out.println(e.getMessage()));
+                User user = new User(email,"null",false,phoneNumber, Arrays.asList(task.getResult()),username);
+
+                CollectionReference collection = this.database.collection("Users");
+                collection.add(user).addOnSuccessListener(documentReference
+                        -> Log.d("Success","A user has been added")).addOnFailureListener(e -> Log.d("Failure", "Problem with adding the user"));
+            }
+        });
     }
 }
