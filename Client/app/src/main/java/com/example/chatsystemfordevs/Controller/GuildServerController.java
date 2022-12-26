@@ -8,20 +8,17 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.view.GravityCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.chatsystemfordevs.Model.GuildServerModel;
 import com.example.chatsystemfordevs.R;
-import com.example.chatsystemfordevs.Utilities.GuildListAdapter;
-import com.example.chatsystemfordevs.Utilities.MessageAdapter;
-import com.example.chatsystemfordevs.Utilities.RoomListAdapter;
+import com.example.chatsystemfordevs.Adapters.GuildListAdapter;
+import com.example.chatsystemfordevs.Adapters.MessageAdapter;
+import com.example.chatsystemfordevs.Adapters.RoomListAdapter;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.messaging.FirebaseMessagingService;
 

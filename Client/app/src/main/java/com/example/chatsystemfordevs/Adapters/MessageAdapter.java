@@ -1,4 +1,4 @@
-package com.example.chatsystemfordevs.Utilities;
+package com.example.chatsystemfordevs.Adapters;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -9,9 +9,6 @@ import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.chatsystemfordevs.R;
-
-import java.util.Collections;
-import java.util.List;
 
 
 public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageViewHolder> {

@@ -1,4 +1,4 @@
-package com.example.chatsystemfordevs.Utilities;
+package com.example.chatsystemfordevs.Adapters;
 
 import android.content.Context;
 import android.view.LayoutInflater;

@@ -1,4 +1,4 @@
-package com.example.chatsystemfordevs.Utilities;
+package com.example.chatsystemfordevs.Adapters;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -11,12 +11,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.chatsystemfordevs.R;
 
 
-public class MemberListAdapter extends RecyclerView.Adapter<MemberListAdapter.RoomListViewHolder> {
+public class RoomListAdapter extends RecyclerView.Adapter<RoomListAdapter.RoomListViewHolder> {
 
     String[] names;
     Context context;
 
-    public MemberListAdapter(Context context, String[] names)
+    public RoomListAdapter(Context context, String[] names)
     {
         this.context = context;
         this.names = names;
