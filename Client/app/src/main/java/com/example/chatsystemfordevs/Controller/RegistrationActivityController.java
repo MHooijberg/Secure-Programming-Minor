@@ -59,7 +59,7 @@ public class RegistrationActivityController extends AppCompatActivity implements
                     authenticationManager.registerUser(this, usr, usrEmail, pass, phoneInput);
                 }else{
                     if(!authenticationManager.isUsernameAlphaNumeric(usr)){
-                        this.username.setError("Username needs to be less than 15.\nUsername needs to be alphanumeric");
+                        this.username.setError("Username needs to be less than 15.\nUsername needs to be alphanumeric. \nUsername mush not have special characters");
                     }
                     if (!authenticationManager.isEmailValid(usrEmail)) {
                         this.email.setError("Incorrect email format");
