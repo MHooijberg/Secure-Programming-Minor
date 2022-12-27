@@ -15,14 +15,12 @@ import java.util.ArrayList;
 
 public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageViewHolder> {
 
-    ArrayList<String> usernames, dates, messages;
+    ArrayList<GuildMessage> messages;
     Context context;
 
-    public MessageAdapter(Context context, ArrayList<String> usernames, ArrayList<String> dates, ArrayList<String> messages)
+    public MessageAdapter(Context context, ArrayList<GuildMessage> messages)
     {
         this.context = context;
-        this.usernames = usernames;
-        this.dates = dates;
         this.messages = messages;
     }
 
@@ -37,9 +35,9 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
     @Override
     public void onBindViewHolder(final MessageViewHolder viewHolder, final int position)
     {
-        viewHolder.messageUsername.setText(usernames.get(position));
-        viewHolder.messageDate.setText(dates.get(position));
-        viewHolder.messageMessage.setText(messages.get(position));
+        viewHolder.messageUsername.setText(messages.get(position).getUsername());
+        viewHolder.messageDate.setText(messages.get(position).getDate());
+        viewHolder.messageMessage.setText(messages.get(position).getMessage());
     }
 
     @Override
@@ -57,6 +55,40 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
             messageUsername = itemView.findViewById(R.id.text_user);
             messageDate = itemView.findViewById(R.id.text_timestamp);
             messageMessage = itemView.findViewById(R.id.text_message);
+        }
+    }
+
+    public static class GuildMessage {
+        String username, date, message;
+
+        public GuildMessage(String username, String date, String message) {
+            this.username = username;
+            this.date = date;
+            this.message = message;
+        }
+
+        public String getUsername() {
+            return username;
+        }
+
+        public void setUsername(String username) {
+            this.username = username;
+        }
+
+        public String getDate() {
+            return date;
+        }
+
+        public void setDate(String date) {
+            this.date = date;
+        }
+
+        public String getMessage() {
+            return message;
+        }
+
+        public void setMessage(String message) {
+            this.message = message;
         }
     }
 }

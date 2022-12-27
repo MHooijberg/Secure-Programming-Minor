@@ -22,12 +22,9 @@ import com.example.chatsystemfordevs.R;
 import com.example.chatsystemfordevs.Adapters.GuildListAdapter;
 import com.example.chatsystemfordevs.Adapters.MessageAdapter;
 import com.example.chatsystemfordevs.Adapters.RoomListAdapter;
-import com.example.chatsystemfordevs.Utilities.DBHelper;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.messaging.FirebaseMessagingService;
 
 import java.util.ArrayList;
@@ -52,30 +49,34 @@ public class GuildServerController extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_guildserverview);
 
+        //Find toolbar in the layout, replace the action bar with the toolbar,
+        //hide the action bar, give it a navigation icon and set it to the drawable
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
         toolbar.setNavigationIcon(R.drawable.burger);
 
+        //Find side panels, create the layout inflater
         LinearLayout side_nav_layout = findViewById(R.id.side_navigation_layout);
         LinearLayout side_members_layout = findViewById(R.id.side_members_layout);
         LayoutInflater inflater = LayoutInflater.from(this);
 
+        //Inflate the side panels with their respective layouts
         View viewNav = inflater.inflate(R.layout.guild_rooms, side_nav_layout, false);
         side_nav_layout.addView(viewNav);
-
         View viewMembers = inflater.inflate(R.layout.guild_members, side_members_layout, false);
         side_members_layout.addView(viewMembers);
 
+        //Set the side panels variables for the hide methods
+        sideNav = findViewById(R.id.side_navigation_full_layout);
+        sideMembers = findViewById(R.id.side_members_full_layout);
 
+        //Connect to database, pull data for messages, guilds and rooms, and insert
+        //into respective recycler views
         database = FirebaseFirestore.getInstance();
-
         getMessages("SampleGuild", "SampleChannel");
         getGuilds();
         getRooms("SampleGuild");
-
-        sideNav = findViewById(R.id.side_navigation_full_layout);
-        sideMembers = findViewById(R.id.side_members_full_layout);
     }
 
     @Override
@@ -117,22 +118,16 @@ public class GuildServerController extends AppCompatActivity {
         startActivity(new Intent(this, SettingsActivityController.class));
     }
 
-    private void fillMessagesRecycler(ArrayList<ArrayList> data) {
+    //Fill recycler methods insert provided data into the recyclers
+    private void fillMessagesRecycler(ArrayList<MessageAdapter.GuildMessage> data) {
         recyclerViewMessages = findViewById(R.id.messages_recycler);
-
-        ArrayList<String> messages = data.get(0);
-        ArrayList<String> usernames = data.get(1);
-        ArrayList<String> dates = data.get(2);
-
-        messageAdapter = new MessageAdapter(this, usernames, dates, messages);
-
+        messageAdapter = new MessageAdapter(this, data);
         recyclerViewMessages.setAdapter(messageAdapter);
         recyclerViewMessages.setLayoutManager(new LinearLayoutManager(this));
     }
 
     private void fillRoomListRecycler(ArrayList<String> names) {
         recyclerViewRoomList = findViewById(R.id.room_list_recycler);
-
         roomListAdapter = new RoomListAdapter(this, names);
         recyclerViewRoomList.setAdapter(roomListAdapter);
         recyclerViewRoomList.setLayoutManager(new LinearLayoutManager(this));
@@ -140,45 +135,42 @@ public class GuildServerController extends AppCompatActivity {
 
     private void fillGuildListRecycler(ArrayList<String> names) {
         recyclerViewGuildList = findViewById(R.id.guild_list_recycler);
-
         guildListAdapter = new GuildListAdapter(this, names);
         recyclerViewGuildList.setAdapter(guildListAdapter);
         recyclerViewGuildList.setLayoutManager(new LinearLayoutManager(this));
     }
 
-    public void getMessages(String guildId, String roomName) {
+    //Get message data from the database from given guild and room
+    public ArrayList<MessageAdapter.GuildMessage> getMessages(String guildId, String roomName) {
         CollectionReference ref = database.collection("Guilds").document(guildId).collection("Channels").document(roomName).collection("Messages");
-        ArrayList<String> messages = new ArrayList<>();
-        ArrayList<String> usernames = new ArrayList<>();
-        ArrayList<String> dates = new ArrayList<>();
-        ArrayList<ArrayList> data = new ArrayList<>();
+        ArrayList<MessageAdapter.GuildMessage> guildMessages = new ArrayList<>();
+
+        //Make pulling data from the database asynchronous
         ref.get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 for (QueryDocumentSnapshot document : task.getResult()) {
-                    Map<String, Object> documentData = document.getData();
-                    Log.i(TAG, document.getId() + " => " + documentData);
-                    messages.add(documentData.get("content").toString());
-                    usernames.add(documentData.get("user").toString());
-                    dates.add(documentData.get("id").toString());
+                    String message = document.get("content").toString();
+                    String username = document.get("user").toString();
+                    String date = document.get("id").toString();
+                    guildMessages.add(new MessageAdapter.GuildMessage(username, date, message));
                 }
-                data.add(messages);
-                data.add(usernames);
-                data.add(dates);
-                fillMessagesRecycler(data);
+                fillMessagesRecycler(guildMessages);
             } else {
                 Log.d(TAG, "Error getting documents: ", task.getException());
             }
         });
-
+        return guildMessages;
     }
 
+    //Get guild data from the database
     public ArrayList<String> getGuilds() {
         CollectionReference ref = database.collection("Guilds");
         ArrayList<String> names = new ArrayList<>();
+
+        //Make pulling data from the database asynchronous
         ref.get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 for (QueryDocumentSnapshot document : task.getResult()) {
-                    Log.d(TAG, document.getId() + " => " + document.getData());
                     names.add(document.getData().get("name").toString());
                 }
                 fillGuildListRecycler(names);
@@ -189,13 +181,15 @@ public class GuildServerController extends AppCompatActivity {
         return names;
     }
 
+    //Get room data from the database from the given guild
     public ArrayList<String> getRooms(String guildId) {
         CollectionReference ref = database.collection("Guilds").document(guildId).collection("Channels");
         ArrayList<String> names = new ArrayList<>();
+
+        //Makes pulling data from the database asynchronous
         ref.get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 for (QueryDocumentSnapshot document : task.getResult()) {
-                    Log.d(TAG, document.getId() + " => " + document.getData());
                     names.add(document.getData().get("name").toString());
                 }
                 fillRoomListRecycler(names);
