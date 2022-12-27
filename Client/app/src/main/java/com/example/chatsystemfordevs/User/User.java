@@ -4,7 +4,7 @@ import java.util.List;
 
 public class User {
     private String email;
-    private String Guild;
+    private String GuildId;
     private boolean isOnline;
     private String phoneNumber;
     private List<String> registrationTokens;
@@ -12,10 +12,18 @@ public class User {
 
     public User(String email, String guild, boolean isOnline, String phoneNumber, List<String> registrationTokens, String username) {
         this.email = email;
-        Guild = guild;
+        this.GuildId = guild;
         this.isOnline = isOnline;
         this.phoneNumber = phoneNumber;
         this.registrationTokens = registrationTokens;
+        this.username = username;
+    }
+
+    public User(String email, String guild, boolean isOnline, String phoneNumber,String username){
+        this.email = email;
+        this.GuildId = guild;
+        this.isOnline = isOnline;
+        this.phoneNumber = phoneNumber;
         this.username = username;
     }
 
@@ -28,11 +36,11 @@ public class User {
     }
 
     public String getGuild() {
-        return Guild;
+        return GuildId;
     }
 
     public void setGuild(String guild) {
-        Guild = guild;
+        GuildId = guild;
     }
 
     public boolean isOnline() {

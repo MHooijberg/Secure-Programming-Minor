@@ -3,12 +3,15 @@ package com.example.chatsystemfordevs.Controller;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -19,13 +22,26 @@ import com.example.chatsystemfordevs.R;
 import com.example.chatsystemfordevs.Adapters.GuildListAdapter;
 import com.example.chatsystemfordevs.Adapters.MessageAdapter;
 import com.example.chatsystemfordevs.Adapters.RoomListAdapter;
+import com.example.chatsystemfordevs.User.User;
+import com.example.chatsystemfordevs.Utilities.DBHelper;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.messaging.FirebaseMessagingService;
+import com.google.firebase.messaging.RemoteMessage;
+
+import java.util.ArrayList;
 
 public class GuildServerController extends AppCompatActivity {
-    private FirebaseFirestore database;
+    private DBHelper database;
     private FirebaseMessagingService firebaseMessaging;
     private GuildServerModel guildModel;
+    private ArrayList<String> incomingMessages;
+    private User user;
+    private String userEmail, username;
+
 
     MessageAdapter messageAdapter;
     RoomListAdapter roomListAdapter;
@@ -36,12 +52,21 @@ public class GuildServerController extends AppCompatActivity {
 
     String[] usernames, dates, messages, roomNames, guildNames;
 
+    public GuildServerController() {
+    }
+
     @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_guildserverview);
+        Bundle extras = getIntent().getExtras();
+        //retreive the data from the database based on the id such as a username
+
+        userEmail = extras.getString("userEmail");
+        this.getUserInfo(userEmail);
+        this.database = new DBHelper();
 
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -123,4 +148,51 @@ public class GuildServerController extends AppCompatActivity {
     public void onSettingsButtonClick(View view) {
         startActivity(new Intent(this, SettingsActivityController.class));
     }
+
+    public class MessageService extends FirebaseMessagingService{
+
+        @Override
+        public void onMessageReceived(RemoteMessage remoteMessage) {
+            // Handle FCM messages.
+
+            System.out.println("Message from " + remoteMessage.getFrom());
+
+            // Check if message contains a data payload.
+            if (remoteMessage.getData().size() > 0) {
+                Log.d("TAG", "Message data payload: " + remoteMessage.getData());
+
+                /*       if (*//* Check if data needs to be processed by long running job *//* true) {
+                // For long-running tasks (10 seconds or more) use WorkManager.
+                scheduleJob();
+            } else {
+                // Handle message within 10 seconds
+                handleNow();
+            }*/
+
+            }
+
+            //This is where messages will be stored
+            GuildServerController.this.incomingMessages.add(remoteMessage.getMessageType());
+
+            // Check if message contains a notification payload.
+            if (remoteMessage.getNotification() != null) {
+                Log.d("TAG", "Message Notification Body: " + remoteMessage.getNotification().getBody());
+            }
+        }
+    }
+    private void getUserInfo(String userEmail){
+        if(username.isEmpty())
+        this.database.getDatabase().collection("Users").whereEqualTo("email",userEmail).get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                for (QueryDocumentSnapshot document : task.getResult()) {
+                    username = document.getString("username");
+                    return;
+                }
+            }else{
+                Toast.makeText(GuildServerController.this, "There was a problem with retrieving the data", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void handleIncomingMessages(){}
 }

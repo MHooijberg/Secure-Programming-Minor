@@ -50,7 +50,11 @@ public class AuthenticationManager {
         firebaseAuth.signInWithEmailAndPassword(email,password).addOnCompleteListener(activity, task -> {
                     if (task.isSuccessful()) {
                         if(Objects.requireNonNull(this.firebaseAuth.getCurrentUser()).isEmailVerified()){
+                            String userEmail = Objects.requireNonNull(task.getResult().getUser()).getEmail();
+
                             Intent loginPage = new Intent(activity, GuildServerController.class);
+                            loginPage.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                            loginPage.putExtra("userEmail",userEmail);
                             activity.startActivity(loginPage);
                             Log.d(TAG, "signInWithEmail:success");
                         }else{
