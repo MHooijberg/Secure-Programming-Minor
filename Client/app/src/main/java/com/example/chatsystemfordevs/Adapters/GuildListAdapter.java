@@ -10,24 +10,21 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.chatsystemfordevs.R;
 
+import java.util.ArrayList;
+
 
 public class GuildListAdapter extends RecyclerView.Adapter<GuildListAdapter.GuildListViewHolder> {
 
-    String[] names;
+    ArrayList<String> names;
     Context context;
-    int index;
 
-    public GuildListAdapter(Context context, String[] names)
+    public GuildListAdapter(Context context, ArrayList<String> names)
     {
         this.context = context;
-        this.names = new String[names.length + 2];
-        this.names[0] = "search";
-        index = 1;
-        for (String name : names) {
-            this.names[index] = name;
-            index++;
-        }
-        this.names[index] = "new";
+        this.names = new ArrayList<>();
+        this.names.add("search");
+        this.names.addAll(names);
+        this.names.add("new");
     }
 
     @Override
@@ -53,7 +50,7 @@ public class GuildListAdapter extends RecyclerView.Adapter<GuildListAdapter.Guil
     @Override
     public int getItemCount()
     {
-        return names.length;
+        return names.size();
     }
 
     @Override
@@ -61,7 +58,7 @@ public class GuildListAdapter extends RecyclerView.Adapter<GuildListAdapter.Guil
         if (position == 0) {
             return 1;
         }
-        if (position == index) {
+        if (position == names.size()-1) {
             return 2;
         }
         return 0;

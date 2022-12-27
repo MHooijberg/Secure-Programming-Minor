@@ -10,13 +10,15 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.chatsystemfordevs.R;
 
+import java.util.ArrayList;
+
 
 public class RoomListAdapter extends RecyclerView.Adapter<RoomListAdapter.RoomListViewHolder> {
 
-    String[] names;
+    ArrayList<String> names;
     Context context;
 
-    public RoomListAdapter(Context context, String[] names)
+    public RoomListAdapter(Context context, ArrayList<String> names)
     {
         this.context = context;
         this.names = names;
@@ -33,13 +35,13 @@ public class RoomListAdapter extends RecyclerView.Adapter<RoomListAdapter.RoomLi
     @Override
     public void onBindViewHolder(final RoomListViewHolder viewHolder, final int position)
     {
-        viewHolder.roomName.setText(names[position]);
+        viewHolder.roomName.setText(names.get(position));
     }
 
     @Override
     public int getItemCount()
     {
-        return names.length;
+        return names.size();
     }
 
     public static class RoomListViewHolder extends RecyclerView.ViewHolder {

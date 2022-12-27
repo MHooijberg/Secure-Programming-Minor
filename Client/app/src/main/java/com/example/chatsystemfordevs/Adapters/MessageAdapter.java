@@ -10,13 +10,15 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.chatsystemfordevs.R;
 
+import java.util.ArrayList;
+
 
 public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageViewHolder> {
 
-    String[] usernames, dates, messages;
+    ArrayList<String> usernames, dates, messages;
     Context context;
 
-    public MessageAdapter(Context context, String[] usernames, String[] dates, String[] messages)
+    public MessageAdapter(Context context, ArrayList<String> usernames, ArrayList<String> dates, ArrayList<String> messages)
     {
         this.context = context;
         this.usernames = usernames;
@@ -35,15 +37,15 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
     @Override
     public void onBindViewHolder(final MessageViewHolder viewHolder, final int position)
     {
-        viewHolder.messageUsername.setText(usernames[position]);
-        viewHolder.messageDate.setText(dates[position]);
-        viewHolder.messageMessage.setText(messages[position]);
+        viewHolder.messageUsername.setText(usernames.get(position));
+        viewHolder.messageDate.setText(dates.get(position));
+        viewHolder.messageMessage.setText(messages.get(position));
     }
 
     @Override
     public int getItemCount()
     {
-        return messages.length;
+        return messages.size();
     }
 
     public static class MessageViewHolder extends RecyclerView.ViewHolder {
