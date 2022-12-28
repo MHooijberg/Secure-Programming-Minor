@@ -34,7 +34,8 @@ public class AuthenticationManager {
         firebaseAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener((Activity) context, task -> {
                     if (task.isSuccessful() && firebaseAuth.getCurrentUser() != null) {
-                        database.createUser(username, email,phoneNumber);
+                        String userID = Objects.requireNonNull(task.getResult().getUser()).getUid();
+                        database.createUser(userID,username, email,phoneNumber);
                         verifyEmail(context);
                         Toast.makeText(context, "User successfully registered", Toast.LENGTH_LONG).show();
                         Intent loginPage = new Intent(context, LoginActivityController.class);

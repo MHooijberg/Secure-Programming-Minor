@@ -4,26 +4,16 @@ import static android.service.controls.ControlsProviderService.TAG;
 
 import android.util.Log;
 
-import androidx.annotation.NonNull;
-
-import com.example.chatsystemfordevs.User.User;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
+import com.example.chatsystemfordevs.User.Moderator;
+import com.example.chatsystemfordevs.User.Users;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.Query;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.messaging.FirebaseMessaging;
 
-import java.util.concurrent.Executor;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Map;
 
 public class DBHelper {
     private final FirebaseFirestore database;
@@ -35,16 +25,13 @@ public class DBHelper {
         return database;
     }
 
-    public void createUser(String username, String email, String phoneNumber) {
+    public void createUser(String id,String username, String email, String phoneNumber) {
         //Initialize the FCM token generation
         FirebaseMessaging.getInstance().getToken().addOnCompleteListener(task -> {
             if (!task.isSuccessful()) {
                 Log.w(TAG, "Fetching FCM registration token failed", task.getException());
             }else{
-                CollectionReference guild = createGuildForUser();
-
-                User user = new User(email,guild.getId(),false,phoneNumber, Arrays.asList(task.getResult()),username);
-
+                Users user = new Moderator(id,email,null,false,phoneNumber, Arrays.asList(task.getResult()),username);
                 CollectionReference collection = this.database.collection("Users");
                 collection.add(user).addOnSuccessListener(documentReference
                         -> Log.d("Success","A user has been added")).addOnFailureListener(e -> Log.d("Failure", "There was a problem with adding the user"));
@@ -52,29 +39,50 @@ public class DBHelper {
         });
     }
 
-    public CollectionReference createGuildForUser(){
+    public void createGuildForUser(String id) {
         CollectionReference guildCollection = this.database.collection("Guilds");
-        HashMap<String,Object> guild = new HashMap<>();
-        HashMap<String,Object> messages = new HashMap<>();
-        HashMap<String,Object> channels = new HashMap<>();
+        HashMap<String, Object> guild = new HashMap<>();
+        HashMap<String, Object> messages = new HashMap<>();
+        HashMap<String, Object> githubChannel = new HashMap<>();
+        HashMap<String, Object> stackOverFlowChannel = new HashMap<>();
+        HashMap<String, Object> openSourceChannel = new HashMap<>();
+        HashMap<String, Object> users = new HashMap<>();
 
-        guild.put("gitHubAPIKey","Secret");
-        guild.put("name","guild name");
-        guild.put("stackExchangeAPIKey","key");
-        guild.put("users","null");
 
-        channels.put("name","channel name");
+        users.put("members",Arrays.asList());
+        users.put("moderators",Arrays.asList("Users/"+id));
 
-        messages.put("content","message");
-        messages.put("id","0");
-        messages.put("type","text");
-        messages.put("user","user");
+        guild.put("gitHubAPIKey", "Secret");
+        guild.put("name", "guild name");
+        guild.put("stackExchangeAPIKey", "key");
+        guild.put("users", users);
 
-        //adds the document and gets its id
-        guildCollection.add(guild).addOnSuccessListener(
-                guildReference -> guildCollection.document(guildReference.getId()).collection("Channels").add(channels).addOnSuccessListener(
-                        channelReference -> guildCollection.document(guildReference.getId()).collection("Channels").document(channelReference.getId()).collection("Messages").add(messages)));
-        return guildCollection;
+        githubChannel.put("name", "Github");
+        stackOverFlowChannel.put("name", "StackOverFlow");
+        openSourceChannel.put("name", "OpenSource");
+
+        messages.put("content", "message");
+        messages.put("id", "0");
+        messages.put("type", "text");
+        messages.put("user", "user");
+
+        try {
+            guildCollection.add(guild).addOnSuccessListener(guildReference -> {
+                guildCollection.document(guildReference.getId()).collection("Channels").document("Github").set(githubChannel);
+                guildCollection.document(guildReference.getId()).collection("Channels").document("StackOverFlow").set(stackOverFlowChannel);
+                guildCollection.document(guildReference.getId()).collection("Channels").document("OpenSource").set(openSourceChannel);
+
+                DocumentReference github = guildCollection.document(guildReference.getId()).collection("Channels").document("Github");
+                DocumentReference stackOverflow = guildCollection.document(guildReference.getId()).collection("Channels").document("StackOverFlow");
+                DocumentReference openSource = guildCollection.document(guildReference.getId()).collection("Channels").document("OpenSource");
+
+                github.collection("Messages").add(messages);
+                stackOverflow.collection("Messages").add(messages);
+                openSource.collection("Messages").add(messages);
+
+            });
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
     }
-
 }

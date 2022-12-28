@@ -11,37 +11,34 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.chatsystemfordevs.Model.GuildServerModel;
-import com.example.chatsystemfordevs.R;
 import com.example.chatsystemfordevs.Adapters.GuildListAdapter;
 import com.example.chatsystemfordevs.Adapters.MessageAdapter;
 import com.example.chatsystemfordevs.Adapters.RoomListAdapter;
-import com.example.chatsystemfordevs.User.User;
+import com.example.chatsystemfordevs.Model.GuildServerModel;
+import com.example.chatsystemfordevs.R;
+import com.example.chatsystemfordevs.User.Moderator;
 import com.example.chatsystemfordevs.Utilities.DBHelper;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class GuildServerController extends AppCompatActivity {
     private DBHelper database;
     private FirebaseMessagingService firebaseMessaging;
     private GuildServerModel guildModel;
     private ArrayList<String> incomingMessages;
-    private User user;
-    private String userEmail, username;
-
+    private Moderator user;
+    private String username;
 
     MessageAdapter messageAdapter;
     RoomListAdapter roomListAdapter;
@@ -64,9 +61,9 @@ public class GuildServerController extends AppCompatActivity {
         Bundle extras = getIntent().getExtras();
         //retreive the data from the database based on the id such as a username
 
-        userEmail = extras.getString("userEmail");
-        this.getUserInfo(userEmail);
+        String userEmail = extras.getString("userEmail");
         this.database = new DBHelper();
+        this.getUserInfo(userEmail);
 
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -139,6 +136,7 @@ public class GuildServerController extends AppCompatActivity {
 
     public void hideSideNav(View view) {
         sideNav.setVisibility(View.GONE);
+        //this.database.createGuildForUser(user.getId());
     }
 
     public void hideSideMembers(View view) {
@@ -146,7 +144,10 @@ public class GuildServerController extends AppCompatActivity {
     }
 
     public void onSettingsButtonClick(View view) {
-        startActivity(new Intent(this, SettingsActivityController.class));
+        Intent intent = new Intent(this,SettingsActivityController.class);
+        intent.putExtra("Username",user.getUsername());
+        intent.putExtra("UserEmail",user.getEmail());
+        startActivity(intent);
     }
 
     public class MessageService extends FirebaseMessagingService{
@@ -181,17 +182,24 @@ public class GuildServerController extends AppCompatActivity {
         }
     }
     private void getUserInfo(String userEmail){
-        if(username.isEmpty())
-        this.database.getDatabase().collection("Users").whereEqualTo("email",userEmail).get().addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
-                for (QueryDocumentSnapshot document : task.getResult()) {
-                    username = document.getString("username");
-                    return;
+        if(user == null){
+            this.database.getDatabase().collection("Users").whereEqualTo("email",userEmail).get().addOnCompleteListener(task -> {
+                if (task.isSuccessful()) {
+                    for (QueryDocumentSnapshot document : task.getResult()) {
+                        String id = document.getString("id");
+                        String email = document.getString("email");
+                        List<String> guildInfo = (List<String>) document.get("guild");
+                        String phoneNumber = document.getString("phoneNumber");
+                        String username = document.getString("username");
+                        //Null needs to be a collection
+                        user = new Moderator(id,email,guildInfo,true,phoneNumber,username);
+                        return;
+                    }
+                }else{
+                    Toast.makeText(GuildServerController.this, "There was a problem with retrieving user data", Toast.LENGTH_SHORT).show();
                 }
-            }else{
-                Toast.makeText(GuildServerController.this, "There was a problem with retrieving the data", Toast.LENGTH_SHORT).show();
-            }
-        });
+            });
+        }
     }
 
     private void handleIncomingMessages(){}
