@@ -28,9 +28,8 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.messaging.FirebaseMessagingService;
 
 import java.util.ArrayList;
-import java.util.Map;
 
-public class GuildServerController extends AppCompatActivity {
+public class GuildServerController extends AppCompatActivity implements RoomListAdapter.OnRoomListener {
     private FirebaseFirestore database;
     private FirebaseMessagingService firebaseMessaging;
     private GuildServerModel guildModel;
@@ -41,6 +40,8 @@ public class GuildServerController extends AppCompatActivity {
     RecyclerView recyclerViewMessages, recyclerViewRoomList, recyclerViewGuildList;
     View sideNav, sideMembers;
     Toolbar toolbar;
+    String roomName;
+    String guildName;
 
     @SuppressLint("MissingInflatedId")
     @Override
@@ -128,7 +129,7 @@ public class GuildServerController extends AppCompatActivity {
 
     private void fillRoomListRecycler(ArrayList<String> names) {
         recyclerViewRoomList = findViewById(R.id.room_list_recycler);
-        roomListAdapter = new RoomListAdapter(this, names);
+        roomListAdapter = new RoomListAdapter(this, names, this);
         recyclerViewRoomList.setAdapter(roomListAdapter);
         recyclerViewRoomList.setLayoutManager(new LinearLayoutManager(this));
     }
@@ -198,5 +199,15 @@ public class GuildServerController extends AppCompatActivity {
             }
         });
         return names;
+    }
+
+    public static void clickOnRoom(View view) {
+
+    }
+
+    @Override
+    public void onRoomClick(int position, ArrayList<RoomListAdapter.RoomListViewHolder> viewHolders) {
+        roomName = String.valueOf(viewHolders.get(position).getRoomName().getText());
+        Log.d(TAG, String.valueOf(roomName));
     }
 }
