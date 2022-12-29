@@ -11,6 +11,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -29,7 +30,7 @@ import com.google.firebase.messaging.FirebaseMessagingService;
 
 import java.util.ArrayList;
 
-public class GuildServerController extends AppCompatActivity implements RoomListAdapter.OnRoomListener {
+public class GuildServerController extends AppCompatActivity implements RoomListAdapter.OnRoomListener, GuildListAdapter.OnGuildListener {
     private FirebaseFirestore database;
     private FirebaseMessagingService firebaseMessaging;
     private GuildServerModel guildModel;
@@ -136,7 +137,7 @@ public class GuildServerController extends AppCompatActivity implements RoomList
 
     private void fillGuildListRecycler(ArrayList<String> names) {
         recyclerViewGuildList = findViewById(R.id.guild_list_recycler);
-        guildListAdapter = new GuildListAdapter(this, names);
+        guildListAdapter = new GuildListAdapter(this, names, this);
         recyclerViewGuildList.setAdapter(guildListAdapter);
         recyclerViewGuildList.setLayoutManager(new LinearLayoutManager(this));
     }
@@ -174,6 +175,7 @@ public class GuildServerController extends AppCompatActivity implements RoomList
                 for (QueryDocumentSnapshot document : task.getResult()) {
                     names.add(document.getData().get("name").toString());
                 }
+                Log.i(TAG, String.valueOf(names));
                 fillGuildListRecycler(names);
             } else {
                 Log.d(TAG, "Error getting documents: ", task.getException());
@@ -209,5 +211,15 @@ public class GuildServerController extends AppCompatActivity implements RoomList
     public void onRoomClick(int position, ArrayList<RoomListAdapter.RoomListViewHolder> viewHolders) {
         roomName = String.valueOf(viewHolders.get(position).getRoomName().getText());
         Log.d(TAG, String.valueOf(roomName));
+        TextView room_name_text = sideMembers.findViewById(R.id.room_name_text);
+        room_name_text.setText(roomName);
+    }
+
+    @Override
+    public void onGuildClick(int position, ArrayList<GuildListAdapter.GuildListViewHolder> viewHolders) {
+        guildName = String.valueOf(viewHolders.get(position).getGuildName().getText());
+        Log.d(TAG, guildName);
+        TextView guild_name_text = sideNav.findViewById(R.id.guild_name);
+        guild_name_text.setText(guildName);
     }
 }

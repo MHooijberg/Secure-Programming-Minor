@@ -21,7 +21,6 @@ public class RoomListAdapter extends RecyclerView.Adapter<RoomListAdapter.RoomLi
     ArrayList<RoomListViewHolder> viewHolders;
     OnRoomListener onRoomListener;
     Context context;
-    Integer selectedItemPos;
     Integer lastItemSelectedPos;
 
     public RoomListAdapter(Context context, ArrayList<String> names, OnRoomListener onRoomListener)
@@ -44,8 +43,8 @@ public class RoomListAdapter extends RecyclerView.Adapter<RoomListAdapter.RoomLi
     @Override
     public void onBindViewHolder(final RoomListViewHolder viewHolder, final int position)
     {
-        viewHolders.add(viewHolder);
         viewHolder.roomName.setText(names.get(position));
+        viewHolders.add(viewHolder);
     }
 
     @Override
@@ -110,14 +109,6 @@ public class RoomListAdapter extends RecyclerView.Adapter<RoomListAdapter.RoomLi
 
     public void setContext(Context context) {
         this.context = context;
-    }
-
-    public Integer getSelectedItemPos() {
-        return selectedItemPos;
-    }
-
-    public void setSelectedItemPos(Integer selectedItemPos) {
-        this.selectedItemPos = selectedItemPos;
     }
 
     public Integer getLastItemSelectedPos() {
