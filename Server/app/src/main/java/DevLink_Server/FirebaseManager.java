@@ -98,7 +98,7 @@ public class FirebaseManager {
         try {
             HandleChangedChannels();
             HandleChangedGuilds();
-            //HandleChangedMessages();
+            HandleChangedMessages();
             HandleChangedUsers();
             isLoading = false;
         } catch (Exception e) {
@@ -157,6 +157,7 @@ public class FirebaseManager {
 
         BatchResponse response = null;
         try {
+            System.out.println("Sending Message Now!");
             // Send the message to the FCM back-end.
             response = firebaseMessagingInstance.sendMulticast(message);
         } catch (FirebaseMessagingException e) {
@@ -242,6 +243,7 @@ public class FirebaseManager {
                     // Build the Android configuration.
                     .build());
 
+        System.out.println("Sending Message Now!");
         // Build the message.
         MulticastMessage message = messageBuilder.build();
         BatchResponse response = null;
@@ -438,40 +440,46 @@ public class FirebaseManager {
                                 for (int i = 0; i < documents.size(); i++)
                                 {
                                     QueryDocumentSnapshot message = documents.get(i);
-                                    MessageData messageInfo = message.toObject(MessageData.class);
-                                    if (messageInfo.getType() == MessageData.MessageType.Text)
+                                    String type = message.getString("type");
+                                    if (type.equals("text"))
                                     {
-                                        // Get information about the message: Which guild it was send it, and by who.
-                                        DocumentReference author = messageInfo.getUser();
-                                        DocumentReference guild = message.getReference().getParent().getParent().getParent().getParent();
-                                        
-                                        List<DocumentReference> userReferences = new ArrayList<DocumentReference>();
-                                        
-                                        // Get all the DocumentReferences to the users in that specific guild
-                                        for (DocumentReference userReference : (List<DocumentReference>) guild.get("users"))
-                                        {
-                                            if (userReference != message.getReference())
-                                                userReferences.add(userReference);
-                                            }
+                                        try {
+                                            // Get information about the message: Which guild it was send it, and by who.
+                                            DocumentReference author = (DocumentReference) message.get("user");
+                                            DocumentSnapshot guild = null;
+                                            guild = message.getReference().getParent().getParent().getParent().getParent().get().get();
                                             
-                                        // Create a message with notification.
-                                        FCMMessageData messageSettings = new FCMMessageData(
-                                            true, 
-                                            "Received a new message in <Guild Name>", 
-                                            "#00ffff", 
-                                            "", 
-                                            "Message Received in DevLink", 
-                                            "", 
-                                            ObjectType.MESSAGE, 
-                                            // Retrieve all register tokens from those users.
-                                            GetUserRegistrationTokens(userReferences));
-                                        // Send that message to all clients.
-                                        FCMSendMulticast(messageSettings);
+                                            
+                                            List<DocumentReference> userReferences = new ArrayList<DocumentReference>();
+                                            
+                                            // Get all the DocumentReferences to the users in that specific guild
+                                            for (DocumentReference userReference : (List<DocumentReference>) guild.get("users"))
+                                            {
+                                                if (userReference != author)
+                                                    userReferences.add(userReference);
+                                                }
+                                                
+                                            // Create a message with notification.
+                                            FCMMessageData messageSettings = new FCMMessageData(
+                                                true, 
+                                                "Received a new message in <Guild Name>", 
+                                                "#00ffff", 
+                                                "", 
+                                                "Message Received in DevLink", 
+                                                "", 
+                                                ObjectType.MESSAGE, 
+                                                // Retrieve all register tokens from those users.
+                                                GetUserRegistrationTokens(userReferences));
+                                            // Send that message to all clients.
+                                            FCMSendMulticast(messageSettings);
+                                        } catch (InterruptedException | ExecutionException e1) {
+                                            e1.printStackTrace();
+                                        }
                                     }
-                                    else if (messageInfo.getType() == MessageData.MessageType.Command)
+                                    else if (type.equals("text"))
                                     {
                                         // TODO: Change this from sting to a enumeration type.
-                                        switch (messageInfo.getContent())
+                                        switch (message.getString("content").toLowerCase())
                                         {
                                             case "github":
                                                 break;
@@ -485,7 +493,7 @@ public class FirebaseManager {
                                         System.out.println("Faulty message!");
                                 }
                             }
-                            System.out.println(documents);
+                            //System.out.println(documents);
 
                         }
                         else
