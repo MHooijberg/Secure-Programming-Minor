@@ -22,32 +22,21 @@ public class CBSManager {
     private static String baseJson;
     // Arraylist that will hold all possible calls for the dataset
     private static ArrayList<String> datasetArray = new ArrayList<String>();
-
-    // constructor to that will set dataset and create the dataset catalog based on key names. Example: "03760ED"
-    public static void main(String dataset) throws MalformedURLException { 
-        //set dataset key in variable for later use
-        datasetID = dataset;
-        // get dataset call options
-        getBaseInformation(datasetID);
-        // use function to set json items in datasetArray
-        setDatasetCatalog(baseJson); 
-
-    }
     
-    // function that will request JSON from CBS
+    // Function that will request JSON from CBS
     public static String getJsonFromUrl(String Dataset) throws MalformedURLException
     {
         // Set URL object for data retrieval
         URL url = new URL(Dataset);
-        // setting up a string builder to convert data to string
+        // Setting up a string builder to convert data to string
         StringBuilder builder = new StringBuilder();
 
-        // get data from CBS and storing it in builder
+        // Get data from CBS and storing it in builder
         try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(url.openStream()))) {
             String str;
-            // check if return if not null
+            // Check if return if not null
             while ((str = bufferedReader.readLine()) != null) {
-                // add string to builder
+                // Add string to builder
                 builder.append(str);
             }
         } catch (IOException e) {
@@ -56,62 +45,69 @@ public class CBSManager {
         // Set string
         String jsonStr = builder.toString();
 
+        // Return json as a string
         return jsonStr;
     }
 
-    //function to get Dataset content overview
-    public static String getBaseInformation(String ID) throws MalformedURLException {
-        //set link to specifik Dataset
-        String combineUrl = baseUrl + ID;
-        //Get content from CBS
+    // Function to get Dataset content overview
+    public static String getJsonLayoutInformation(String dataset) throws MalformedURLException {
+        // Set link to specifik Dataset
+        String combineUrl = baseUrl + dataset;
+        // Get content from CBS
         baseJson = getJsonFromUrl(combineUrl);
 
+        // Returns the layout of the dataset in json string
         return baseJson;
     }
 
-    //function to get specific data from the Dataset
-    public static String getInformation(String content) throws MalformedURLException {
-        // TO DO: Check if request matches Dataset
-        if(datasetArray.contains(content)) {
-            //Set content link
-            String informationID = baseUrl + datasetID + "/" + content;
-            //Get content from CBS
-            String itemJson = getJsonFromUrl(informationID);
-            System.out.println(itemJson);
-            
-            return itemJson;
-        } else {
-            // returns error if content request does not match data in datasetArray
-            return "Error: Data can not be found";
-        }
-    }
-
-    // function to set arrayList with every Json call for this dataset
+    // Function to set arrayList with every Json call for this dataset
     public static void setDatasetCatalog(String dataset) {
-        // convert Json String to object
+        // Convert Json String to object
         JsonObject myJson = new Gson().fromJson(dataset, JsonObject.class);
-        // convert Json object to Json array
+        // Convert Json object to Json array
         JsonArray jsonArray = myJson.getAsJsonArray("value");
 
         // For loop to set all Json object to arraylist for use in other functions
         for (JsonElement element : jsonArray) {
-            // makes sure that object is json
+            // Makes sure that object is json
             JsonObject jsonElement = element.getAsJsonObject();
-            // converts json object to string
+            // Converts json object to string
             String elementName = jsonElement.get("name").getAsString();
-            // set string in ArrayList
+            // Set string in ArrayList
             datasetArray.add(elementName);
         }
     }
 
-    // get dataset calls in ArrayList
-    public static ArrayList<String> getDatasetCalls() { 
+    // Get dataset calls in ArrayList
+    public static ArrayList<String> getDatasetCalls(String dataset) throws MalformedURLException { 
+        // Retrieves Json string with dataset key
+        baseJson = getJsonLayoutInformation(dataset);
+        // Convert Json string in call option arraylist
+        setDatasetCatalog(baseJson);
+        
+        // Return arrayList with call options
         return datasetArray;
     }
 
-    // get dataset calls in Json format
-    public static String getDatasetJson() { 
-        return baseJson;
-    }
+    // Function to get specific data from the Dataset
+    public static String getInformation(String dataset, String content) throws MalformedURLException {
+        // Retrieves Json string with dataset key
+        baseJson = getJsonLayoutInformation(dataset);
+        // Convert Json string in call option arraylist
+        setDatasetCatalog(baseJson);
 
+        // Check if request matches Dataset
+        if(datasetArray.contains(content)) {
+            // Set content link
+            String informationID = baseUrl + dataset + "/" + content;
+            // Get content from CBS
+            String itemJson = getJsonFromUrl(informationID);
+            
+            // Return Json information
+            return itemJson;
+        } else {
+            // Returns error if content request does not match data in datasetArray
+            return "Error: Data can not be found";
+        }
+    }
 }

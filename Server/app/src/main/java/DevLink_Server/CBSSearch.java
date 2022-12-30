@@ -9,8 +9,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Scanner;
 
-import javax.naming.directory.SearchResult;
-
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -33,7 +31,7 @@ public class CBSSearch {
         // Instantiating the StringBuffer class to hold the result
         StringBuffer sb = new StringBuffer();
         while(sc.hasNext()) {
-           sb.append(sc.next());
+            sb.append(sc.next());
         }
         // Retrieving the String from the String Buffer object
         String result = sb.toString();
