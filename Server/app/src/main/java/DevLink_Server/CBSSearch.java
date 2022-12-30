@@ -6,7 +6,10 @@ import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Scanner;
+
+import javax.naming.directory.SearchResult;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
@@ -19,10 +22,8 @@ public class CBSSearch {
 
     // Arraylist to contain all datasetCollection keys
     private static ArrayList<String> datasetCollenction = new ArrayList<String>();
-
-    public static void main(String[] args) throws IOException {
-        searchQuery("test");
-    }
+    // HashMap to store search results
+    private static HashMap<String, String> searchResults = new HashMap<String, String>();
     
     // Function to retrieve all dataset collection keys
     public static void setDatasetCollection() throws IOException {
@@ -75,7 +76,7 @@ public class CBSSearch {
     }
 
     // Function to search for datasets
-    public static void searchQuery(String search) throws IOException {
+    public static HashMap<String, String> searchQuery(String search) throws IOException {
         // Set all dataset keys to be searched in
         setDatasetCollection();
 
@@ -85,25 +86,35 @@ public class CBSSearch {
             try{
                 // Get Json string containing all table information
                 String jsonResult = getJsonFromUrl(item + "/TableInfos");
-                
-                // convert Json String to object
+        
+                // Convert Json String to object
                 JsonObject myJson = new Gson().fromJson(jsonResult, JsonObject.class);
-                // convert Json object to Json array
+                // Convert Json object to Json array
                 JsonArray jsonArray = myJson.getAsJsonArray("value");
 
                 // For loop to set all Json object to arraylist for use in other functions
                 for (JsonElement element : jsonArray) {
-                    // makes sure that object is json
+                    // Makes sure that object is json
                     JsonObject jsonElement = element.getAsJsonObject();
-                    // converts json object to string
-                    String elementName = jsonElement.get("Identifier").getAsString() + " - " + jsonElement.get("Title").getAsString();
-                    // set string in ArrayList
-                    System.out.println(elementName);
+                    // Converts json object to string
+                    String elementName = jsonElement.get("Identifier").getAsString() + " - " + jsonElement.get("Title").getAsString() + " - " + jsonElement.get("ShortDescription").getAsString();
+                    
+                    // Search if word can be found in the table information
+                    if(elementName.contains(search)){
+                        // Set result key and title in Hasmap 
+                        searchResults.put(jsonElement.get("Identifier").getAsString(), jsonElement.get("Title").getAsString());
+                        // Limit return to three results
+                        if(searchResults.size() == 3) {
+                            return searchResults;
+                        }
+                    }
                 }
             } catch (Exception e) {
             }
-
         }
+
+        // return in case that less than three results can be given
+        return searchResults;
 
     }
 
