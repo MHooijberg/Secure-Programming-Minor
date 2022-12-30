@@ -151,4 +151,5 @@ public class RoomListAdapter extends RecyclerView.Adapter<RoomListAdapter.RoomLi
     public interface OnRoomListener {
         void onRoomClick(int position, ArrayList<RoomListViewHolder> viewHolders);
     }
+
 }

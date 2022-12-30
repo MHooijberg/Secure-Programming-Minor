@@ -33,6 +33,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.Source;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
@@ -66,7 +67,7 @@ public class GuildServerController extends AppCompatActivity implements RoomList
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_guildserverview);
         Bundle extras = getIntent().getExtras();
-        //retreive the data from the database based on the id such as a username
+        //retrieve the data from the database based on the id such as a username
 
         String userEmail = extras.getString("userEmail");
         this.database = new DBHelper();
@@ -94,11 +95,18 @@ public class GuildServerController extends AppCompatActivity implements RoomList
         sideNav = findViewById(R.id.side_navigation_full_layout);
         sideMembers = findViewById(R.id.side_members_full_layout);
 
+        //Create recyclers
+        createMessagesRecycler();
+        createRoomListRecycler();
+        createGuildListRecycler();
+
         //Connect to database, pull data for messages, guilds and rooms, and insert
         //into respective recycler views
-        getMessages("SampleGuild", "SampleChannel");
+        guildId = "SampleGuild";
+        roomId = "SampleChannel";
+        getMessages(guildId, roomId);
         getGuilds();
-        getRooms("SampleGuild");
+        getRooms(guildId);
     }
 
     @Override
@@ -200,23 +208,23 @@ public class GuildServerController extends AppCompatActivity implements RoomList
     private void handleIncomingMessages(){}
 
     //Fill recycler methods insert provided data into the recyclers
-    private void fillMessagesRecycler(ArrayList<MessageAdapter.GuildMessage> data) {
+    private void createMessagesRecycler() {
         recyclerViewMessages = findViewById(R.id.messages_recycler);
-        messageAdapter = new MessageAdapter(this, data);
+        messageAdapter = new MessageAdapter(this, new ArrayList<>());
         recyclerViewMessages.setAdapter(messageAdapter);
         recyclerViewMessages.setLayoutManager(new LinearLayoutManager(this));
     }
 
-    private void fillRoomListRecycler(ArrayList<String> names, ArrayList<String> ids) {
+    private void createRoomListRecycler() {
         recyclerViewRoomList = findViewById(R.id.room_list_recycler);
-        roomListAdapter = new RoomListAdapter(this, names, ids, this);
+        roomListAdapter = new RoomListAdapter(this, new ArrayList<>(), new ArrayList<>(), this);
         recyclerViewRoomList.setAdapter(roomListAdapter);
         recyclerViewRoomList.setLayoutManager(new LinearLayoutManager(this));
     }
 
-    private void fillGuildListRecycler(ArrayList<String> names, ArrayList<String> ids) {
+    private void createGuildListRecycler() {
         recyclerViewGuildList = findViewById(R.id.guild_list_recycler);
-        guildListAdapter = new GuildListAdapter(this, names, ids, this);
+        guildListAdapter = new GuildListAdapter(this, new ArrayList<>(), new ArrayList<>(), this);
         recyclerViewGuildList.setAdapter(guildListAdapter);
         recyclerViewGuildList.setLayoutManager(new LinearLayoutManager(this));
     }
@@ -231,11 +239,23 @@ public class GuildServerController extends AppCompatActivity implements RoomList
             if (task.isSuccessful()) {
                 for (QueryDocumentSnapshot document : task.getResult()) {
                     String message = document.get("content").toString();
-                    String username = document.get("user").toString();
+                    DocumentReference userReference = (DocumentReference) document.get("user");
                     String date = document.get("id").toString();
+                    String username = "Placeholder";
                     guildMessages.add(new MessageAdapter.GuildMessage(username, date, message));
+                    messageAdapter.setMessages(guildMessages);
+                    userReference.get().addOnCompleteListener(task1 -> {
+                        if (task1.isSuccessful()) {
+                            for (int i = 0; i < messageAdapter.getItemCount(); i++) {
+                                messageAdapter.getMessages().get(i).setUsername(task1.getResult().get("username").toString());
+                            }
+                        }
+                        messageAdapter.notifyDataSetChanged();
+                    });
+                    messageAdapter.notifyDataSetChanged();
                 }
-                fillMessagesRecycler(guildMessages);
+
+
             } else {
                 Log.d(TAG, "Error getting documents: ", task.getException());
             }
@@ -255,7 +275,9 @@ public class GuildServerController extends AppCompatActivity implements RoomList
                     names.add(document.getData().get("name").toString());
                     ids.add(document.getId());
                 }
-                fillGuildListRecycler(names, ids);
+                guildListAdapter.setNames(names);
+                guildListAdapter.setIds(ids);
+                guildListAdapter.notifyDataSetChanged();
             } else {
                 Log.d(TAG, "Error getting documents: ", task.getException());
             }
@@ -275,7 +297,9 @@ public class GuildServerController extends AppCompatActivity implements RoomList
                     names.add(document.getData().get("name").toString());
                     ids.add(document.getId());
                 }
-                fillRoomListRecycler(names, ids);
+                roomListAdapter.setNames(names);
+                roomListAdapter.setIds(ids);
+                roomListAdapter.notifyDataSetChanged();
             } else {
                 Log.d(TAG, "Error getting documents: ", task.getException());
             }

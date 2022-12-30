@@ -150,7 +150,10 @@ public class GuildListAdapter extends RecyclerView.Adapter<GuildListAdapter.Guil
     }
 
     public void setNames(ArrayList<String> names) {
-        this.names = names;
+        this.names = new ArrayList<>();
+        this.names.add("search");
+        this.names.addAll(names);
+        this.names.add("new");
     }
 
     public ArrayList<String> getIds() {
@@ -158,7 +161,10 @@ public class GuildListAdapter extends RecyclerView.Adapter<GuildListAdapter.Guil
     }
 
     public void setIds(ArrayList<String> ids) {
-        this.ids = ids;
+        this.ids = new ArrayList<>();
+        this.ids.add("search");
+        this.ids.addAll(ids);
+        this.ids.add("new");
     }
 
     public ArrayList<GuildListViewHolder> getViewHolders() {

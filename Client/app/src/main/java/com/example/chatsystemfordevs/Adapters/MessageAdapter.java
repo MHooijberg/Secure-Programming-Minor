@@ -91,4 +91,12 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
             this.message = message;
         }
     }
+
+    public ArrayList<GuildMessage> getMessages() {
+        return messages;
+    }
+
+    public void setMessages(ArrayList<GuildMessage> messages) {
+        this.messages = messages;
+    }
 }
