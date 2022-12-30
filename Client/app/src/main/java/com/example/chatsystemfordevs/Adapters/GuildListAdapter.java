@@ -31,7 +31,12 @@ public class GuildListAdapter extends RecyclerView.Adapter<GuildListAdapter.Guil
         this.names.add("search");
         this.names.addAll(names);
         this.names.add("new");
-        this.ids = ids;
+
+        this.ids = new ArrayList<>();
+        this.ids.add("search");
+        this.ids.addAll(ids);
+        this.ids.add("new");
+
         this.viewHolders = new ArrayList<>();
         this.onGuildListener = onGuildListener;
         lastItemSelectedPos = 0;
@@ -87,7 +92,7 @@ public class GuildListAdapter extends RecyclerView.Adapter<GuildListAdapter.Guil
         {
             super(itemView);
             guildName = itemView.findViewById(R.id.guild_list_name_text);
-            guildId = itemView.findViewById(R.id.guild_list_id_text);
+            guildId = itemView.findViewById(R.id.guild_list_documentid_text);
             cardView = itemView.findViewById(R.id.guild_list_card);
             //imageView = itemView.findViewById(R.id.guild_list_card_image);
             this.onGuildListener = onGuildListener;

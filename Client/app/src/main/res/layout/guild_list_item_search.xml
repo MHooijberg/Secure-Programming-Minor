@@ -35,6 +35,14 @@
             android:visibility="gone"
             android:text="@string/guild_name"
             />
+
+        <TextView
+            android:id="@+id/guild_list_documentid_text"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone"
+            android:text="@string/guild_name"
+            />
     </androidx.cardview.widget.CardView>
 
 
