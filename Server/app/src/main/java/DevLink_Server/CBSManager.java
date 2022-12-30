@@ -89,12 +89,12 @@ public class CBSManager {
     // function to set arrayList with every Json call for this dataset
     public static void setDatasetCatalog(String dataset) {
         // convert Json String to object
-        JsonObject myjson = new Gson().fromJson(dataset, JsonObject.class);
+        JsonObject myJson = new Gson().fromJson(dataset, JsonObject.class);
         // convert Json object to Json array
-        JsonArray the_json_Array = myjson.getAsJsonArray("value");
+        JsonArray jsonArray = myJson.getAsJsonArray("value");
 
         // For loop to set all Json object to arraylist for use in other functions
-        for (JsonElement element : the_json_Array) {
+        for (JsonElement element : jsonArray) {
             // makes sure that object is json
             JsonObject jsonElement = element.getAsJsonObject();
             // converts json object to string
