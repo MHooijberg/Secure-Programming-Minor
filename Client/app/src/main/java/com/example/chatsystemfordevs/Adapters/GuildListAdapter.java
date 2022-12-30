@@ -1,9 +1,6 @@
 package com.example.chatsystemfordevs.Adapters;
 
-import static androidx.constraintlayout.helper.widget.MotionEffect.TAG;
-
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,18 +18,20 @@ public class GuildListAdapter extends RecyclerView.Adapter<GuildListAdapter.Guil
 
     ArrayList<String> names;
     //TODO: Implement getting images for the guilds
+    ArrayList<String> ids;
     ArrayList<GuildListViewHolder> viewHolders;
     OnGuildListener onGuildListener;
     Context context;
     Integer lastItemSelectedPos;
 
-    public GuildListAdapter(Context context, ArrayList<String> names, OnGuildListener onGuildListener)
+    public GuildListAdapter(Context context, ArrayList<String> names, ArrayList<String> ids, OnGuildListener onGuildListener)
     {
         this.context = context;
         this.names = new ArrayList<>();
         this.names.add("search");
         this.names.addAll(names);
         this.names.add("new");
+        this.ids = ids;
         this.viewHolders = new ArrayList<>();
         this.onGuildListener = onGuildListener;
         lastItemSelectedPos = 0;
@@ -56,6 +55,7 @@ public class GuildListAdapter extends RecyclerView.Adapter<GuildListAdapter.Guil
     public void onBindViewHolder(final GuildListViewHolder viewHolder, final int position)
     {
         viewHolder.guildName.setText(names.get(position));
+        viewHolder.guildId.setText(ids.get(position));
         viewHolders.add(viewHolder);
     }
 
@@ -78,6 +78,7 @@ public class GuildListAdapter extends RecyclerView.Adapter<GuildListAdapter.Guil
 
     public class GuildListViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         TextView guildName;
+        TextView guildId;
         CardView cardView;
         //ImageView imageView;
         OnGuildListener onGuildListener;
@@ -86,6 +87,7 @@ public class GuildListAdapter extends RecyclerView.Adapter<GuildListAdapter.Guil
         {
             super(itemView);
             guildName = itemView.findViewById(R.id.guild_list_name_text);
+            guildId = itemView.findViewById(R.id.guild_list_id_text);
             cardView = itemView.findViewById(R.id.guild_list_card);
             //imageView = itemView.findViewById(R.id.guild_list_card_image);
             this.onGuildListener = onGuildListener;
@@ -107,6 +109,14 @@ public class GuildListAdapter extends RecyclerView.Adapter<GuildListAdapter.Guil
 
         public void setGuildName(TextView guildName) {
             this.guildName = guildName;
+        }
+
+        public TextView getGuildId() {
+            return guildId;
+        }
+
+        public void setGuildId(TextView guildId) {
+            this.guildId = guildId;
         }
 
         public CardView getCardView() {
@@ -136,6 +146,14 @@ public class GuildListAdapter extends RecyclerView.Adapter<GuildListAdapter.Guil
 
     public void setNames(ArrayList<String> names) {
         this.names = names;
+    }
+
+    public ArrayList<String> getIds() {
+        return ids;
+    }
+
+    public void setIds(ArrayList<String> ids) {
+        this.ids = ids;
     }
 
     public ArrayList<GuildListViewHolder> getViewHolders() {

@@ -18,15 +18,17 @@ import java.util.ArrayList;
 public class RoomListAdapter extends RecyclerView.Adapter<RoomListAdapter.RoomListViewHolder> {
 
     ArrayList<String> names;
+    ArrayList<String> ids;
     ArrayList<RoomListViewHolder> viewHolders;
     OnRoomListener onRoomListener;
     Context context;
     Integer lastItemSelectedPos;
 
-    public RoomListAdapter(Context context, ArrayList<String> names, OnRoomListener onRoomListener)
+    public RoomListAdapter(Context context, ArrayList<String> names, ArrayList<String> ids, OnRoomListener onRoomListener)
     {
         this.context = context;
         this.names = names;
+        this.ids = ids;
         this.viewHolders = new ArrayList<>();
         this.onRoomListener = onRoomListener;
         lastItemSelectedPos = 0;
@@ -44,6 +46,7 @@ public class RoomListAdapter extends RecyclerView.Adapter<RoomListAdapter.RoomLi
     public void onBindViewHolder(final RoomListViewHolder viewHolder, final int position)
     {
         viewHolder.roomName.setText(names.get(position));
+        viewHolder.roomId.setText(ids.get(position));
         viewHolders.add(viewHolder);
     }
 
@@ -55,6 +58,7 @@ public class RoomListAdapter extends RecyclerView.Adapter<RoomListAdapter.RoomLi
 
     public class RoomListViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
         TextView roomName;
+        TextView roomId;
         ConstraintLayout layout;
         OnRoomListener onRoomListener;
 
@@ -62,6 +66,7 @@ public class RoomListAdapter extends RecyclerView.Adapter<RoomListAdapter.RoomLi
         {
             super(itemView);
             roomName = itemView.findViewById(R.id.room_name_text);
+            roomId = itemView.findViewById(R.id.room_id_text);
             layout = itemView.findViewById(R.id.room_list_item_layout);
             this.onRoomListener = onRoomListener;
 
@@ -83,6 +88,14 @@ public class RoomListAdapter extends RecyclerView.Adapter<RoomListAdapter.RoomLi
         public void setRoomName(TextView roomName) {
             this.roomName = roomName;
         }
+
+        public TextView getRoomId() {
+            return roomId;
+        }
+
+        public void setRoomId(TextView roomId) {
+            this.roomId = roomId;
+        }
     }
 
     public void unselectItem(int position) {
@@ -101,6 +114,14 @@ public class RoomListAdapter extends RecyclerView.Adapter<RoomListAdapter.RoomLi
 
     public void setNames(ArrayList<String> names) {
         this.names = names;
+    }
+
+    public ArrayList<String> getIds() {
+        return ids;
+    }
+
+    public void setIds(ArrayList<String> ids) {
+        this.ids = ids;
     }
 
     public Context getContext() {
