@@ -137,7 +137,6 @@ public class GuildServerController extends AppCompatActivity {
 
     public void hideSideNav(View view) {
         sideNav.setVisibility(View.GONE);
-        this.database.createGuildForUser(this.userDocumentId);
     }
 
     public void hideSideMembers(View view) {
