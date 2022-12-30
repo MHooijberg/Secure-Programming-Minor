@@ -38,7 +38,6 @@ public class ResetPasswordActivityController extends AppCompatActivity {
             ).show();
         } else {
             FirebaseAuth.getInstance().sendPasswordResetEmail(email).addOnCompleteListener(task -> {
-
                 if (task.isSuccessful()) {
                     Toast.makeText(
                             this,

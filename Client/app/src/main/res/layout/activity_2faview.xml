@@ -120,16 +120,14 @@
         android:id="@+id/next_button"
         android:layout_width="265dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="92dp"
+        android:layout_marginBottom="52dp"
         android:onClick="onNextButtonClick"
         android:paddingTop="0dp"
         android:paddingBottom="0dp"
         android:text="@string/next"
-        android:textSize="34sp"
-        app:cornerRadius="32sp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/guideline3"
         app:layout_constraintStart_toStartOf="@+id/guideline2"
-        app:layout_constraintTop_toBottomOf="@+id/otp_edit_text"
-        tools:onClick="onNextButtonClick" />
+        app:layout_constraintTop_toBottomOf="@+id/otp_edit_text" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

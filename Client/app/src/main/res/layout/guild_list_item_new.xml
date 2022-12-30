@@ -18,16 +18,32 @@
         app:layout_constraintTop_toTopOf="parent"
         style="@style/guild_list_item">
 
-            <ImageView
-                android:id="@+id/new_guild_card_icon"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:contentDescription="@string/plus_icon"
-                android:scaleX="0.4"
-                android:scaleY="0.4"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/plus" />
+        <ImageView
+            android:id="@+id/new_guild_card_icon"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:contentDescription="@string/plus_icon"
+            android:scaleX="0.4"
+            android:scaleY="0.4"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/plus" />
+
+        <TextView
+            android:id="@+id/guild_list_name_text"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone"
+            android:text="@string/guild_name"
+            />
+
+        <TextView
+            android:id="@+id/guild_list_documentid_text"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone"
+            android:text="@string/guild_name"
+            />
     </androidx.cardview.widget.CardView>
 
 

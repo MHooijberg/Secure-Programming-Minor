@@ -6,28 +6,40 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.chatsystemfordevs.R;
 
+import java.util.ArrayList;
+
 
 public class GuildListAdapter extends RecyclerView.Adapter<GuildListAdapter.GuildListViewHolder> {
 
-    String[] names;
+    ArrayList<String> names;
+    //TODO: Implement getting images for the guilds
+    ArrayList<String> ids;
+    ArrayList<GuildListViewHolder> viewHolders;
+    OnGuildListener onGuildListener;
     Context context;
-    int index;
+    Integer lastItemSelectedPos;
 
-    public GuildListAdapter(Context context, String[] names)
+    public GuildListAdapter(Context context, ArrayList<String> names, ArrayList<String> ids, OnGuildListener onGuildListener)
     {
         this.context = context;
-        this.names = new String[names.length + 2];
-        this.names[0] = "search";
-        index = 1;
-        for (String name : names) {
-            this.names[index] = name;
-            index++;
-        }
-        this.names[index] = "new";
+        this.names = new ArrayList<>();
+        this.names.add("search");
+        this.names.addAll(names);
+        this.names.add("new");
+
+        this.ids = new ArrayList<>();
+        this.ids.add("search");
+        this.ids.addAll(ids);
+        this.ids.add("new");
+
+        this.viewHolders = new ArrayList<>();
+        this.onGuildListener = onGuildListener;
+        lastItemSelectedPos = 0;
     }
 
     @Override
@@ -41,19 +53,21 @@ public class GuildListAdapter extends RecyclerView.Adapter<GuildListAdapter.Guil
         if (viewType == 2) {
             view = inflater.inflate(R.layout.guild_list_item_new, parent, false);
         }
-        return new GuildListViewHolder(view);
+        return new GuildListViewHolder(view, onGuildListener);
     }
 
     @Override
     public void onBindViewHolder(final GuildListViewHolder viewHolder, final int position)
     {
-        //viewHolder.guildName.setText(names[position]);
+        viewHolder.guildName.setText(names.get(position));
+        viewHolder.guildId.setText(ids.get(position));
+        viewHolders.add(viewHolder);
     }
 
     @Override
     public int getItemCount()
     {
-        return names.length;
+        return names.size();
     }
 
     @Override
@@ -61,19 +75,121 @@ public class GuildListAdapter extends RecyclerView.Adapter<GuildListAdapter.Guil
         if (position == 0) {
             return 1;
         }
-        if (position == index) {
+        if (position == names.size()-1) {
             return 2;
         }
         return 0;
     }
 
-    public static class GuildListViewHolder extends RecyclerView.ViewHolder {
+    public class GuildListViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         TextView guildName;
+        TextView guildId;
+        CardView cardView;
+        //ImageView imageView;
+        OnGuildListener onGuildListener;
 
-        public GuildListViewHolder(View itemView)
+        public GuildListViewHolder(View itemView, OnGuildListener onGuildListener)
         {
             super(itemView);
-            //guildName = itemView.findViewById(R.id.text_user);
+            guildName = itemView.findViewById(R.id.guild_list_name_text);
+            guildId = itemView.findViewById(R.id.guild_list_documentid_text);
+            cardView = itemView.findViewById(R.id.guild_list_card);
+            //imageView = itemView.findViewById(R.id.guild_list_card_image);
+            this.onGuildListener = onGuildListener;
+
+            itemView.setOnClickListener(this);
         }
+
+        @Override
+        public void onClick(View view) {
+            unselectItem(lastItemSelectedPos);
+            selectItem(getAdapterPosition());
+            lastItemSelectedPos=getAdapterPosition();
+            onGuildListener.onGuildClick(getAdapterPosition(), getViewHolders());
+        }
+
+        public TextView getGuildName() {
+            return guildName;
+        }
+
+        public void setGuildName(TextView guildName) {
+            this.guildName = guildName;
+        }
+
+        public TextView getGuildId() {
+            return guildId;
+        }
+
+        public void setGuildId(TextView guildId) {
+            this.guildId = guildId;
+        }
+
+        public CardView getCardView() {
+            return cardView;
+        }
+
+        public void setCardView(CardView cardView) {
+            this.cardView = cardView;
+        }
+    }
+
+    public void unselectItem(int position) {
+        viewHolders.get(position).getCardView().setRadius(100);
+    }
+
+    public void selectItem(int position) {
+        viewHolders.get(position).getCardView().setRadius(20);
+    }
+
+    public interface OnGuildListener {
+        void onGuildClick(int position, ArrayList<GuildListViewHolder> viewHolders);
+    }
+
+    public ArrayList<String> getNames() {
+        return names;
+    }
+
+    public void setNames(ArrayList<String> names) {
+        this.names = names;
+    }
+
+    public ArrayList<String> getIds() {
+        return ids;
+    }
+
+    public void setIds(ArrayList<String> ids) {
+        this.ids = ids;
+    }
+
+    public ArrayList<GuildListViewHolder> getViewHolders() {
+        return viewHolders;
+    }
+
+    public void setViewHolders(ArrayList<GuildListViewHolder> viewHolders) {
+        this.viewHolders = viewHolders;
+    }
+
+    public OnGuildListener getOnGuildListener() {
+        return onGuildListener;
+    }
+
+    public void setOnGuildListener(OnGuildListener onGuildListener) {
+        this.onGuildListener = onGuildListener;
+    }
+
+    public Context getContext() {
+        return context;
+    }
+
+    public void setContext(Context context) {
+        this.context = context;
+    }
+
+    public Integer getLastItemSelectedPos() {
+        return lastItemSelectedPos;
+    }
+
+    public void setLastItemSelectedPos(Integer lastItemSelectedPos) {
+        this.lastItemSelectedPos = lastItemSelectedPos;
     }
 }
