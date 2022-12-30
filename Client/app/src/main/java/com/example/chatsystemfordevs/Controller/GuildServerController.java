@@ -23,6 +23,7 @@ import com.example.chatsystemfordevs.Model.GuildServerModel;
 import com.example.chatsystemfordevs.R;
 import com.example.chatsystemfordevs.User.Moderator;
 import com.example.chatsystemfordevs.Utilities.DBHelper;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -39,6 +40,7 @@ public class GuildServerController extends AppCompatActivity {
     private ArrayList<String> incomingMessages;
     private Moderator user;
     private String username;
+    private String userDocumentId;
 
     MessageAdapter messageAdapter;
     RoomListAdapter roomListAdapter;
@@ -46,7 +48,6 @@ public class GuildServerController extends AppCompatActivity {
     RecyclerView recyclerViewMessages, recyclerViewRoomList, recyclerViewGuildList;
     View sideNav, sideMembers;
     Toolbar toolbar;
-
     String[] usernames, dates, messages, roomNames, guildNames;
 
     public GuildServerController() {
@@ -136,7 +137,7 @@ public class GuildServerController extends AppCompatActivity {
 
     public void hideSideNav(View view) {
         sideNav.setVisibility(View.GONE);
-        //this.database.createGuildForUser(user.getId());
+        this.database.createGuildForUser(this.userDocumentId);
     }
 
     public void hideSideMembers(View view) {
@@ -186,12 +187,12 @@ public class GuildServerController extends AppCompatActivity {
             this.database.getDatabase().collection("Users").whereEqualTo("email",userEmail).get().addOnCompleteListener(task -> {
                 if (task.isSuccessful()) {
                     for (QueryDocumentSnapshot document : task.getResult()) {
+                        this.userDocumentId = document.getId();
                         String id = document.getString("id");
                         String email = document.getString("email");
                         List<String> guildInfo = (List<String>) document.get("guild");
                         String phoneNumber = document.getString("phoneNumber");
                         String username = document.getString("username");
-                        //Null needs to be a collection
                         user = new Moderator(id,email,guildInfo,true,phoneNumber,username);
                         return;
                     }
@@ -201,6 +202,7 @@ public class GuildServerController extends AppCompatActivity {
             });
         }
     }
+
 
     private void handleIncomingMessages(){}
 }
