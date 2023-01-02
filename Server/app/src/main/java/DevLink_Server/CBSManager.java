@@ -2,15 +2,20 @@ package DevLink_Server;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+
+import org.apache.http.client.methods.HttpGet;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.storage.v2.Object;
 
 public class CBSManager {
 
@@ -24,15 +29,20 @@ public class CBSManager {
     private static ArrayList<String> datasetArray = new ArrayList<String>();
     
     // Function that will request JSON from CBS
-    public static String getJsonFromUrl(String Dataset) throws MalformedURLException
+    public static String getJsonFromUrl(String Dataset) throws IOException
     {
         // Set URL object for data retrieval
         URL url = new URL(Dataset);
+
+        // Setup for HTTP connection
+        HttpURLConnection c = (HttpURLConnection) url.openConnection();
+        c.setRequestMethod("GET");
+        
         // Setting up a string builder to convert data to string
         StringBuilder builder = new StringBuilder();
 
         // Get data from CBS and storing it in builder
-        try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(url.openStream()))) {
+        try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(c.getInputStream()))) {
             String str;
             // Check if return if not null
             while ((str = bufferedReader.readLine()) != null) {
@@ -50,7 +60,7 @@ public class CBSManager {
     }
 
     // Function to get Dataset content overview
-    public static String getJsonLayoutInformation(String dataset) throws MalformedURLException {
+    public static String getJsonLayoutInformation(String dataset) throws IOException {
         // Set link to specifik Dataset
         String combineUrl = baseUrl + dataset;
         // Get content from CBS
@@ -79,7 +89,7 @@ public class CBSManager {
     }
 
     // Get dataset calls in ArrayList
-    public static ArrayList<String> getDatasetCalls(String dataset) throws MalformedURLException { 
+    public static ArrayList<String> getDatasetCalls(String dataset) throws IOException { 
         // Retrieves Json string with dataset key
         baseJson = getJsonLayoutInformation(dataset);
         // Convert Json string in call option arraylist
@@ -90,7 +100,7 @@ public class CBSManager {
     }
 
     // Function to get specific data from the Dataset
-    public static String getInformation(String dataset, String content) throws MalformedURLException {
+    public static String getInformation(String dataset, String content) throws IOException {
         // Retrieves Json string with dataset key
         baseJson = getJsonLayoutInformation(dataset);
         // Convert Json string in call option arraylist

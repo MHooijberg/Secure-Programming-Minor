@@ -3,7 +3,9 @@ package DevLink_Server;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
+import java.net.ProtocolException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -47,17 +49,22 @@ public class CBSSearch {
     }
 
     // function that will request JSON from CBS
-    public static String getJsonFromUrl(String Dataset) throws MalformedURLException
+    public static String getJsonFromUrl(String Dataset) throws IOException
     {
         // Start URL link for any open data request
         String urlString = "https://opendata.cbs.nl/ODataApi/OData/" + Dataset;
         // Set URL object for data retrieval
         URL url = new URL(urlString);
+        
+        // Setup for HTTP connection
+        HttpURLConnection c = (HttpURLConnection) url.openConnection();
+        c.setRequestMethod("GET");
+
         // setting up a string builder to convert data to string
         StringBuilder builder = new StringBuilder();
 
         // get data from CBS and storing it in builder
-        try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(url.openStream()))) {
+        try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(c.getInputStream()))) {
             String str;
             // check if return if not null
             while ((str = bufferedReader.readLine()) != null) {
