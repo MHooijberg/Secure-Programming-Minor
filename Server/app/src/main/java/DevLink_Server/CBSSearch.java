@@ -3,13 +3,12 @@ package DevLink_Server;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.ProtocolException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Scanner;
+
+import javax.net.ssl.HttpsURLConnection;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
@@ -57,7 +56,7 @@ public class CBSSearch {
         URL url = new URL(urlString);
         
         // Setup for HTTP connection
-        HttpURLConnection c = (HttpURLConnection) url.openConnection();
+        HttpsURLConnection c = (HttpsURLConnection) url.openConnection();
         c.setRequestMethod("GET");
 
         // setting up a string builder to convert data to string

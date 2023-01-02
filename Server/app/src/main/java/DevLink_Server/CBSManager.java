@@ -2,20 +2,17 @@ package DevLink_Server;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 
-import org.apache.http.client.methods.HttpGet;
+import javax.net.ssl.HttpsURLConnection;
+
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.storage.v2.Object;
 
 public class CBSManager {
 
@@ -35,7 +32,7 @@ public class CBSManager {
         URL url = new URL(Dataset);
 
         // Setup for HTTP connection
-        HttpURLConnection c = (HttpURLConnection) url.openConnection();
+        HttpsURLConnection c = (HttpsURLConnection) url.openConnection();
         c.setRequestMethod("GET");
         
         // Setting up a string builder to convert data to string
