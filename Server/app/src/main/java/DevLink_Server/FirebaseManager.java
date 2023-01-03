@@ -55,6 +55,7 @@ import com.google.cloud.firestore.Query;
 import com.google.cloud.firestore.QueryDocumentSnapshot;
 import com.google.cloud.firestore.QuerySnapshot;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -292,9 +293,9 @@ public class FirebaseManager {
         }
     }
 
-    private List<QueryDocumentSnapshot> HandleChangedChannels() throws Exception {
+    private List<DocumentChange> HandleChangedChannels() throws Exception {
         // Complex code from the API which basically is a variable which result of an API call can be set in advance.
-        final SettableApiFuture<List<QueryDocumentSnapshot>> future = SettableApiFuture.create();
+        final SettableApiFuture<List<DocumentChange>> future = SettableApiFuture.create();
 
         // [START firestore_listen_document]
         // Creates an event listener by adding a snapshot listener which activates whenever the output of a query changes.
@@ -314,7 +315,7 @@ public class FirebaseManager {
                         }
 
                         // Get the documents from the query.
-                        List<QueryDocumentSnapshot> documents = snapshot.getDocuments();
+                        List<DocumentChange> documents = snapshot.getDocumentChanges();
                         // Continue if at least one document is returned.
                         if (documents.size() > 0)
                         {
@@ -322,12 +323,12 @@ public class FirebaseManager {
                             if (!isLoading)
                             {
                                 // For loop for each channel document within the QuerySnapshot.
-                                for (QueryDocumentSnapshot channel : documents)
+                                for (DocumentChange channel : documents)
                                 {
                                     // Create a ApiFuture to retrieve a query.
                                     // Query: Get the parent of the collection the channel document is currently in.
                                     // Simple: Get the guild of the current channel.
-                                    ApiFuture<DocumentSnapshot> nearFuture = channel.getReference().getParent().getParent().get();
+                                    ApiFuture<DocumentSnapshot> nearFuture = channel.getDocument().getReference().getParent().getParent().get();
                                     DocumentSnapshot guildSnapshot;
                                     List<DocumentReference> userReferences = null;
                                     try
@@ -340,7 +341,7 @@ public class FirebaseManager {
                                             userReferences = (List<DocumentReference>) guildSnapshot.get("users");
                                             // Send a message to clients in the guild to update their UI.
                                             if (userReferences != null || userReferences.size() > 0)
-                                                FCMSendMulticast(GetUserRegistrationTokens(userReferences), FCMMessageData.ObjectType.CHANNEL, channel.getId());
+                                                FCMSendMulticast(GetUserRegistrationTokens(userReferences), FCMMessageData.ObjectType.CHANNEL, channel.getDocument().getId());
                                     }
                                     catch (InterruptedException | ExecutionException e1) { e1.printStackTrace(); }
                                 }
@@ -363,8 +364,8 @@ public class FirebaseManager {
         return future.get(30, TimeUnit.SECONDS);
     }
 
-    private List<QueryDocumentSnapshot> HandleChangedGuilds() throws Exception {
-        final SettableApiFuture<List<QueryDocumentSnapshot>> future = SettableApiFuture.create();
+    private List<DocumentChange> HandleChangedGuilds() throws Exception {
+        final SettableApiFuture<List<DocumentChange>> future = SettableApiFuture.create();
 
         // [START firestore_listen_document]
         firestoreInstance.collectionGroup("Guilds")
@@ -380,20 +381,20 @@ public class FirebaseManager {
                             return;
                         }
 
-                        List<QueryDocumentSnapshot> documents = snapshot.getDocuments();
+                        List<DocumentChange> documents = snapshot.getDocumentChanges();
                         if (documents.size() > 0)
                         {
                             // Prevent any actions to be done when the code is loading the first local datasets.
                             if (!isLoading)
                             {
-                                for (QueryDocumentSnapshot guild : documents)
+                                for (DocumentChange guild : documents)
                                 {
                                     try {
                                         // Get user document references by reading out the user field inside the current guild document.
-                                        List<DocumentReference> userReferences = (List<DocumentReference>) guild.get("users");
+                                        List<DocumentReference> userReferences = (List<DocumentReference>) guild.getDocument().get("users");
                                         // Send a message if there's at least one user in the guild.
                                         if (userReferences.size() > 0)
-                                            FCMSendMulticast(GetUserRegistrationTokens(userReferences), FCMMessageData.ObjectType.GUILD, guild.getId());
+                                            FCMSendMulticast(GetUserRegistrationTokens(userReferences), FCMMessageData.ObjectType.GUILD, guild.getDocument().getId());
                                     }
                                     catch (InterruptedException | ExecutionException e1) { e1.printStackTrace(); }
                                 }
@@ -414,8 +415,8 @@ public class FirebaseManager {
         return future.get(30, TimeUnit.SECONDS);
     }
 
-    private List<QueryDocumentSnapshot> HandleChangedMessages() throws Exception {
-        final SettableApiFuture<List<QueryDocumentSnapshot>> future = SettableApiFuture.create();
+    private List<DocumentChange> HandleChangedMessages() throws Exception {
+        final SettableApiFuture<List<DocumentChange>> future = SettableApiFuture.create();
 
         // [START firestore_listen_document]
         firestoreInstance.collectionGroup("Messages")
@@ -431,7 +432,7 @@ public class FirebaseManager {
                             return;
                         }
 
-                        var documents = snapshot.getDocuments();
+                        var documents = snapshot.getDocumentChanges();
                         if (documents.size() > 0)
                         {
                             // Prevent any actions to be done when the code is loading the first local datasets.
@@ -439,26 +440,31 @@ public class FirebaseManager {
                             {
                                 for (int i = 0; i < documents.size(); i++)
                                 {
-                                    QueryDocumentSnapshot message = documents.get(i);
+                                    QueryDocumentSnapshot message = documents.get(i).getDocument();
                                     String type = message.getString("type");
                                     if (type.equals("text"))
                                     {
                                         try {
                                             // Get information about the message: Which guild it was send it, and by who.
                                             DocumentReference author = (DocumentReference) message.get("user");
-                                            DocumentSnapshot guild = null;
-                                            guild = message.getReference().getParent().getParent().getParent().getParent().get().get();
+                                            DocumentSnapshot guild = message.getReference().getParent().getParent().getParent().getParent().get().get();
                                             
                                             
                                             List<DocumentReference> userReferences = new ArrayList<DocumentReference>();
+                                            HashMap<String, ArrayList<DocumentReference>> guildUserList = (HashMap<String, ArrayList<DocumentReference>>) guild.get("users");
                                             
                                             // Get all the DocumentReferences to the users in that specific guild
-                                            for (DocumentReference userReference : (List<DocumentReference>) guild.get("users"))
+                                            for (Map.Entry<String, ArrayList<DocumentReference>> Role : guildUserList.entrySet())
                                             {
-                                                if (userReference != author)
-                                                    userReferences.add(userReference);
-                                                }
-                                                
+                                                for (DocumentReference userReference : Role.getValue())
+                                                    if (!userReference.getPath().equals(author.getPath()))
+                                                    {
+                                                        userReferences.add(userReference);
+                                                    }
+                                            }
+                                            
+                                            // Retrieve all register tokens from those users.
+                                            List<String> registrationTokens = GetUserRegistrationTokens(userReferences);
                                             // Create a message with notification.
                                             FCMMessageData messageSettings = new FCMMessageData(
                                                 true, 
@@ -466,10 +472,10 @@ public class FirebaseManager {
                                                 "#00ffff", 
                                                 "", 
                                                 "Message Received in DevLink", 
-                                                "", 
+                                                message.getId(), 
                                                 ObjectType.MESSAGE, 
-                                                // Retrieve all register tokens from those users.
-                                                GetUserRegistrationTokens(userReferences));
+                                                registrationTokens
+                                                );
                                             // Send that message to all clients.
                                             FCMSendMulticast(messageSettings);
                                         } catch (InterruptedException | ExecutionException e1) {
@@ -511,9 +517,9 @@ public class FirebaseManager {
         return future.get(30, TimeUnit.SECONDS);
     }
     
-    private List<QueryDocumentSnapshot> HandleChangedUsers() throws Exception
+    private List<DocumentChange> HandleChangedUsers() throws Exception
     {
-        final SettableApiFuture<List<QueryDocumentSnapshot>> future = SettableApiFuture.create();
+        final SettableApiFuture<List<DocumentChange>> future = SettableApiFuture.create();
 
         // [START firestore_listen_document]
         firestoreInstance.collectionGroup("Users")
@@ -529,17 +535,17 @@ public class FirebaseManager {
                             return;
                         }
 
-                        List<QueryDocumentSnapshot> documents = snapshot.getDocuments();
+                        List<DocumentChange> documents = snapshot.getDocumentChanges();
                         if (documents.size() > 0)
                         {
                             // Prevent any actions to be done when the code is loading the first local datasets.
                             if (!isLoading)
                             {
                                 // Handle each changed user in the event.
-                                for (QueryDocumentSnapshot user : documents)
+                                for (DocumentChange user : documents)
                                 {
                                     // Get the reference to the current user's document.             
-                                    DocumentReference userReference = user.getReference();
+                                    DocumentReference userReference = user.getDocument().getReference();
                                     try
                                     {
                                         // Create a query to select all Guilds with the changed user in it.
@@ -567,7 +573,7 @@ public class FirebaseManager {
                                         // Continue if there's at least one user which should update.
                                         if (userReferences != null || userReferences.size() > 0)
                                             // Send a message to the devices of the users which display the changed user's data.
-                                            FCMSendMulticast(GetUserRegistrationTokens(userReferences), FCMMessageData.ObjectType.USER, user.getId());
+                                            FCMSendMulticast(GetUserRegistrationTokens(userReferences), FCMMessageData.ObjectType.USER, user.getDocument().getId());
                                     }
                                     catch (InterruptedException | ExecutionException e1) { e1.printStackTrace(); }
                                 }
@@ -619,8 +625,10 @@ public class FirebaseManager {
             if (document.exists())
             {
                 //System.out.println("Document data: " + document.getData());
-                List<String> userTokenList = (List<String>) document.get("registrationToken");
-                registrationToken.addAll(userTokenList);
+                List<String> userTokenList = null;
+                userTokenList = (List<String>) document.get("registrationTokens");
+                if (userTokenList != null || userTokenList.size() != 0)
+                    registrationToken.addAll(userTokenList);
             }
             else
             {
