@@ -17,7 +17,6 @@ import java.util.ArrayList;
 public class GuildListAdapter extends RecyclerView.Adapter<GuildListAdapter.GuildListViewHolder> {
 
     ArrayList<String> names;
-    //TODO: Implement getting images for the guilds
     ArrayList<String> ids;
     ArrayList<GuildListViewHolder> viewHolders;
     OnGuildListener onGuildListener;
@@ -53,7 +52,9 @@ public class GuildListAdapter extends RecyclerView.Adapter<GuildListAdapter.Guil
         if (viewType == 2) {
             view = inflater.inflate(R.layout.guild_list_item_new, parent, false);
         }
-        return new GuildListViewHolder(view, onGuildListener);
+        GuildListViewHolder viewHolder = new GuildListViewHolder(view, onGuildListener);
+        viewHolders.add(viewHolder);
+        return viewHolder;
     }
 
     @Override
@@ -61,7 +62,7 @@ public class GuildListAdapter extends RecyclerView.Adapter<GuildListAdapter.Guil
     {
         viewHolder.guildName.setText(names.get(position));
         viewHolder.guildId.setText(ids.get(position));
-        viewHolders.add(viewHolder);
+
     }
 
     @Override
@@ -85,7 +86,6 @@ public class GuildListAdapter extends RecyclerView.Adapter<GuildListAdapter.Guil
         TextView guildName;
         TextView guildId;
         CardView cardView;
-        //ImageView imageView;
         OnGuildListener onGuildListener;
 
         public GuildListViewHolder(View itemView, OnGuildListener onGuildListener)
@@ -105,7 +105,7 @@ public class GuildListAdapter extends RecyclerView.Adapter<GuildListAdapter.Guil
             unselectItem(lastItemSelectedPos);
             selectItem(getAdapterPosition());
             lastItemSelectedPos=getAdapterPosition();
-            onGuildListener.onGuildClick(getAdapterPosition(), getViewHolders());
+            onGuildListener.onGuildSelect(getAdapterPosition(), getViewHolders());
         }
 
         public TextView getGuildName() {
@@ -142,7 +142,7 @@ public class GuildListAdapter extends RecyclerView.Adapter<GuildListAdapter.Guil
     }
 
     public interface OnGuildListener {
-        void onGuildClick(int position, ArrayList<GuildListViewHolder> viewHolders);
+        void onGuildSelect(int position, ArrayList<GuildListViewHolder> viewHolders);
     }
 
     public ArrayList<String> getNames() {
@@ -197,5 +197,9 @@ public class GuildListAdapter extends RecyclerView.Adapter<GuildListAdapter.Guil
 
     public void setLastItemSelectedPos(Integer lastItemSelectedPos) {
         this.lastItemSelectedPos = lastItemSelectedPos;
+    }
+
+    public void clearViewHolders() {
+        viewHolders.clear();
     }
 }

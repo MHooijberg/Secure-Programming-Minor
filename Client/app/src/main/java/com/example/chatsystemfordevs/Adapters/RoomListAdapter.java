@@ -1,7 +1,6 @@
 package com.example.chatsystemfordevs.Adapters;
 
 import android.content.Context;
-import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,7 +38,10 @@ public class RoomListAdapter extends RecyclerView.Adapter<RoomListAdapter.RoomLi
     {
         LayoutInflater inflater = LayoutInflater.from(context);
         View view = inflater.inflate(R.layout.room_list_item, parent, false);
-        return new RoomListViewHolder(view, onRoomListener);
+
+        RoomListViewHolder viewHolder = new RoomListViewHolder(view, onRoomListener);
+        viewHolders.add(viewHolder);
+        return viewHolder;
     }
 
     @Override
@@ -78,7 +80,7 @@ public class RoomListAdapter extends RecyclerView.Adapter<RoomListAdapter.RoomLi
             unselectItem(lastItemSelectedPos);
             selectItem(getAdapterPosition());
             lastItemSelectedPos=getAdapterPosition();
-            onRoomListener.onRoomClick(getAdapterPosition(), getViewHolders());
+            onRoomListener.onRoomSelect(getAdapterPosition(), getViewHolders());
         }
 
         public TextView getRoomName() {
@@ -149,7 +151,10 @@ public class RoomListAdapter extends RecyclerView.Adapter<RoomListAdapter.RoomLi
     }
 
     public interface OnRoomListener {
-        void onRoomClick(int position, ArrayList<RoomListViewHolder> viewHolders);
+        void onRoomSelect(int position, ArrayList<RoomListViewHolder> viewHolders);
     }
 
+    public void clearViewHolders() {
+        viewHolders.clear();
+    }
 }

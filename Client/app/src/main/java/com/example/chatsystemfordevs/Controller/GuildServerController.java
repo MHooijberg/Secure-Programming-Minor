@@ -104,9 +104,10 @@ public class GuildServerController extends AppCompatActivity implements RoomList
         //into respective recycler views
         guildId = "SampleGuild";
         roomId = "SampleChannel";
-        getMessages(guildId, roomId);
+
         getGuilds();
         getRooms(guildId);
+        getMessages(guildId, roomId);
     }
 
     @Override
@@ -239,19 +240,28 @@ public class GuildServerController extends AppCompatActivity implements RoomList
             if (task.isSuccessful()) {
                 for (QueryDocumentSnapshot document : task.getResult()) {
                     String message = document.get("content").toString();
-                    DocumentReference userReference = (DocumentReference) document.get("user");
+                    DocumentReference userReference;
+                    try {
+                         userReference = (DocumentReference) document.get("user");
+                    } catch (Exception e) {
+                        return;
+                    }
                     String date = document.get("id").toString();
                     String username = "Placeholder";
                     guildMessages.add(new MessageAdapter.GuildMessage(username, date, message));
                     messageAdapter.setMessages(guildMessages);
-                    userReference.get().addOnCompleteListener(task1 -> {
-                        if (task1.isSuccessful()) {
-                            for (int i = 0; i < messageAdapter.getItemCount(); i++) {
-                                messageAdapter.getMessages().get(i).setUsername(task1.getResult().get("username").toString());
+                    try {
+                        userReference.get().addOnCompleteListener(task1 -> {
+                            if (task1.isSuccessful()) {
+                                for (int i = 0; i < messageAdapter.getItemCount(); i++) {
+                                    messageAdapter.getMessages().get(i).setUsername(task1.getResult().get("username").toString());
+                                }
                             }
-                        }
-                        messageAdapter.notifyDataSetChanged();
-                    });
+                            messageAdapter.notifyDataSetChanged();
+                        });
+                    } catch (Exception e) {
+                        Log.e(TAG, String.valueOf(e));
+                    }
                     messageAdapter.notifyDataSetChanged();
                 }
 
@@ -277,7 +287,9 @@ public class GuildServerController extends AppCompatActivity implements RoomList
                 }
                 guildListAdapter.setNames(names);
                 guildListAdapter.setIds(ids);
+                guildListAdapter.clearViewHolders();
                 guildListAdapter.notifyDataSetChanged();
+                //onGuildSelect(1, guildListAdapter.getViewHolders());
             } else {
                 Log.d(TAG, "Error getting documents: ", task.getException());
             }
@@ -299,6 +311,7 @@ public class GuildServerController extends AppCompatActivity implements RoomList
                 }
                 roomListAdapter.setNames(names);
                 roomListAdapter.setIds(ids);
+                roomListAdapter.clearViewHolders();
                 roomListAdapter.notifyDataSetChanged();
             } else {
                 Log.d(TAG, "Error getting documents: ", task.getException());
@@ -311,21 +324,20 @@ public class GuildServerController extends AppCompatActivity implements RoomList
     }
 
     @Override
-    public void onRoomClick(int position, ArrayList<RoomListAdapter.RoomListViewHolder> viewHolders) {
+    public void onRoomSelect(int position, ArrayList<RoomListAdapter.RoomListViewHolder> viewHolders) {
         roomName = String.valueOf(viewHolders.get(position).getRoomName().getText());
         roomId = String.valueOf(viewHolders.get(position).getRoomId().getText());
-        Log.d(TAG, roomName);
+
         TextView room_name_text = sideMembers.findViewById(R.id.room_name_text);
         getMessages(guildId, roomId);
         room_name_text.setText(roomName);
     }
 
     @Override
-    public void onGuildClick(int position, ArrayList<GuildListAdapter.GuildListViewHolder> viewHolders) {
+    public void onGuildSelect(int position, ArrayList<GuildListAdapter.GuildListViewHolder> viewHolders) {
         guildName = String.valueOf(viewHolders.get(position).getGuildName().getText());
         guildId = String.valueOf(viewHolders.get(position).getGuildId().getText());
-        Log.d(TAG, guildName);
-        Log.d(TAG, guildId);
+
         TextView guild_name_text = sideNav.findViewById(R.id.guild_name);
         getRooms(guildId);
         guild_name_text.setText(guildName);
