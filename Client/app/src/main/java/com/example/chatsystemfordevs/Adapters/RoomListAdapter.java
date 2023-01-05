@@ -16,18 +16,16 @@ import java.util.ArrayList;
 
 public class RoomListAdapter extends RecyclerView.Adapter<RoomListAdapter.RoomListViewHolder> {
 
-    ArrayList<String> names;
-    ArrayList<String> ids;
+    ArrayList<Room> rooms;
     ArrayList<RoomListViewHolder> viewHolders;
     OnRoomListener onRoomListener;
     Context context;
     Integer lastItemSelectedPos;
 
-    public RoomListAdapter(Context context, ArrayList<String> names, ArrayList<String> ids, OnRoomListener onRoomListener)
+    public RoomListAdapter(Context context, ArrayList<Room> rooms, OnRoomListener onRoomListener)
     {
         this.context = context;
-        this.names = names;
-        this.ids = ids;
+        this.rooms = rooms;
         this.viewHolders = new ArrayList<>();
         this.onRoomListener = onRoomListener;
         lastItemSelectedPos = 0;
@@ -47,15 +45,15 @@ public class RoomListAdapter extends RecyclerView.Adapter<RoomListAdapter.RoomLi
     @Override
     public void onBindViewHolder(final RoomListViewHolder viewHolder, final int position)
     {
-        viewHolder.roomName.setText(names.get(position));
-        viewHolder.roomId.setText(ids.get(position));
+        viewHolder.roomName.setText(rooms.get(position).getName());
+        viewHolder.roomId.setText(rooms.get(position).getId());
         viewHolders.add(viewHolder);
     }
 
     @Override
     public int getItemCount()
     {
-        return names.size();
+        return rooms.size();
     }
 
     public class RoomListViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
@@ -110,20 +108,37 @@ public class RoomListAdapter extends RecyclerView.Adapter<RoomListAdapter.RoomLi
         viewHolders.get(position).roomName.setTextColor(viewHolders.get(position).roomName.getContext().getColor(R.color.black));
     }
 
-    public ArrayList<String> getNames() {
-        return names;
+    public static class Room {
+        String name, id;
+
+        public Room(String name, String id) {
+            this.name = name;
+            this.id = id;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public String getId() {
+            return id;
+        }
+
+        public void setId(String id) {
+            this.id = id;
+        }
     }
 
-    public void setNames(ArrayList<String> names) {
-        this.names = names;
+    public ArrayList<Room> getRooms() {
+        return rooms;
     }
 
-    public ArrayList<String> getIds() {
-        return ids;
-    }
-
-    public void setIds(ArrayList<String> ids) {
-        this.ids = ids;
+    public void setRooms(ArrayList<Room> rooms) {
+        this.rooms = rooms;
     }
 
     public Context getContext() {

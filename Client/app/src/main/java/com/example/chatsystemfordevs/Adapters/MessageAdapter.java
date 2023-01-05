@@ -102,6 +102,6 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
 
     public void addMessage(GuildMessage message) {
         this.messages.add(message);
-        notifyItemInserted(messages.size());
+        notifyItemInserted(-1);
     }
 }
