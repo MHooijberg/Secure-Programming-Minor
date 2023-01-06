@@ -3,59 +3,82 @@ package com.example.chatsystemfordevs.Controller;
 import static android.service.controls.ControlsProviderService.TAG;
 
 import android.annotation.SuppressLint;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.chatsystemfordevs.Adapters.GuildListAdapter;
 import com.example.chatsystemfordevs.Adapters.MessageAdapter;
 import com.example.chatsystemfordevs.Adapters.RoomListAdapter;
-import com.example.chatsystemfordevs.Model.GuildServerModel;
+import com.example.chatsystemfordevs.Model.Message;
 import com.example.chatsystemfordevs.R;
 import com.example.chatsystemfordevs.User.Moderator;
+import com.example.chatsystemfordevs.Utilities.CommandKeywords;
 import com.example.chatsystemfordevs.Utilities.DBHelper;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
-import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.Source;
-import com.google.firebase.messaging.FirebaseMessagingService;
-import com.google.firebase.messaging.RemoteMessage;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class GuildServerController extends AppCompatActivity implements RoomListAdapter.OnRoomListener, GuildListAdapter.OnGuildListener {
     private DBHelper database;
-    private FirebaseMessagingService firebaseMessaging;
-    private GuildServerModel guildModel;
-    private ArrayList<String> incomingMessages;
     private Moderator user;
-    private String username;
     private String userDocumentId;
+    private EditText sendMessage;
+    private MessageAdapter messageAdapter;
+    private RoomListAdapter roomListAdapter;
+    private GuildListAdapter guildListAdapter;
+    private View sideNav, sideMembers;
+    private String roomName;
+    private String roomId;
+    private String guildId;
 
-    MessageAdapter messageAdapter;
-    RoomListAdapter roomListAdapter;
-    GuildListAdapter guildListAdapter;
-    RecyclerView recyclerViewMessages, recyclerViewRoomList, recyclerViewGuildList;
-    View sideNav, sideMembers;
-    Toolbar toolbar;
-    String roomName, guildName, roomId, guildId;
+
+    private final BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String message = intent.getExtras().getString("documentReference");
+            Log.d("TAG","Hello");
+            if(intent.getExtras().getString("actionHandler").equals("update")){
+                retrieveRecentMessage(message);
+            }
+        }
+    };
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        LocalBroadcastManager.getInstance(this).registerReceiver((mMessageReceiver), new IntentFilter("MyData"));
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
+    }
 
     public GuildServerController() {
     }
@@ -70,14 +93,17 @@ public class GuildServerController extends AppCompatActivity implements RoomList
         //retrieve the data from the database based on the id such as a username
 
         String userEmail = extras.getString("userEmail");
-        this.database = new DBHelper();
+        database = new DBHelper();
         this.getUserInfo(userEmail);
+
+        this.sendMessage = findViewById(R.id.edit_message);
+        ImageView sendButton = findViewById(R.id.send_button);
 
         //Find toolbar in the layout, replace the action bar with the toolbar,
         //hide the action bar, give it a navigation icon and set it to the drawable
-        toolbar = findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        Objects.requireNonNull(getSupportActionBar()).setDisplayShowTitleEnabled(false);
         toolbar.setNavigationIcon(R.drawable.burger);
 
         //Find side panels, create the layout inflater
@@ -104,9 +130,36 @@ public class GuildServerController extends AppCompatActivity implements RoomList
         //into respective recycler views
         guildId = "SampleGuild";
         roomId = "SampleChannel";
+        roomName = "Github";
         getMessages(guildId, roomId);
         getGuilds();
         getRooms(guildId);
+
+
+        sendButton.setOnClickListener(view -> {
+            String message = sendMessage.getText().toString();
+            if(!TextUtils.isEmpty(message))
+            {
+                String typeOfMessage;
+                DocumentReference reference = database.getDatabase().collection("Users").document(userDocumentId);
+                String date = String.valueOf(System.currentTimeMillis());
+                try {
+                if(message.startsWith(CommandKeywords.Github.toString())
+                        || message.startsWith(CommandKeywords.StackExchange.toString())
+                        || message.startsWith(CommandKeywords.OpenSource.toString())){
+                    typeOfMessage = "command";
+                }else{
+                    typeOfMessage = "text";
+                }
+                Message pojoMessage = new Message(2,message, date,typeOfMessage,reference);
+                    database.sendMessageToDatabase(userDocumentId,roomName,pojoMessage,guildId);
+                }catch (Exception e){
+                    sendMessage.setError("There was a problem with sending a message");
+                }
+            }else{
+                sendMessage.setError("You cannot send an empty message");
+            }
+        });
     }
 
     @Override
@@ -151,41 +204,34 @@ public class GuildServerController extends AppCompatActivity implements RoomList
         startActivity(intent);
     }
 
-    public class MessageService extends FirebaseMessagingService{
-
-        @Override
-        public void onMessageReceived(RemoteMessage remoteMessage) {
-            // Handle FCM messages.
-
-            System.out.println("Message from " + remoteMessage.getFrom());
-
-            // Check if message contains a data payload.
-            if (remoteMessage.getData().size() > 0) {
-                Log.d("TAG", "Message data payload: " + remoteMessage.getData());
-
-                /*       if (*//* Check if data needs to be processed by long running job *//* true) {
-                // For long-running tasks (10 seconds or more) use WorkManager.
-                scheduleJob();
-            } else {
-                // Handle message within 10 seconds
-                handleNow();
-            }*/
-
-            }
-
-            //This is where messages will be stored
-            GuildServerController.this.incomingMessages.add(remoteMessage.getMessageType());
-
-            // Check if message contains a notification payload.
-            if (remoteMessage.getNotification() != null) {
-                Log.d("TAG", "Message Notification Body: " + remoteMessage.getNotification().getBody());
-            }
+    private void retrieveRecentMessage(String messageDocument){
+        try{
+            database.getDatabase().document(messageDocument).get().addOnCompleteListener(task -> {
+                if(task.isSuccessful()){
+                    DocumentSnapshot user = task.getResult();
+                    if(user != null){
+                        String content = task.getResult().getString("content");
+                        String creationDate = task.getResult().getString("creation_date");
+                        DocumentReference sender = (DocumentReference) task.getResult().get("user");
+                        sender.get().addOnCompleteListener(user1 -> {
+                            if(user1.isSuccessful()){
+                                String username = user1.getResult().getString("username");
+                                MessageAdapter.GuildMessage message = new MessageAdapter.GuildMessage(username,creationDate,content);
+                                messageAdapter.addMessageToCollection(message);
+                            }
+                        });
+                    }
+                }
+            });
+        }catch (Exception e){
+            sendMessage.setError("There was a problem with retrieving the actual message");
         }
+        
     }
 
     private void getUserInfo(String userEmail){
         if(user == null){
-            this.database.getDatabase().collection("Users").whereEqualTo("email",userEmail).get().addOnCompleteListener(task -> {
+            database.getDatabase().collection("Users").whereEqualTo("email",userEmail).get().addOnCompleteListener(task -> {
                 if (task.isSuccessful()) {
                     for (QueryDocumentSnapshot document : task.getResult()) {
                         this.userDocumentId = document.getId();
@@ -204,26 +250,23 @@ public class GuildServerController extends AppCompatActivity implements RoomList
         }
     }
 
-
-    private void handleIncomingMessages(){}
-
     //Fill recycler methods insert provided data into the recyclers
     private void createMessagesRecycler() {
-        recyclerViewMessages = findViewById(R.id.messages_recycler);
+        RecyclerView recyclerViewMessages = findViewById(R.id.messages_recycler);
         messageAdapter = new MessageAdapter(this, new ArrayList<>());
         recyclerViewMessages.setAdapter(messageAdapter);
         recyclerViewMessages.setLayoutManager(new LinearLayoutManager(this));
     }
 
     private void createRoomListRecycler() {
-        recyclerViewRoomList = findViewById(R.id.room_list_recycler);
+        RecyclerView recyclerViewRoomList = findViewById(R.id.room_list_recycler);
         roomListAdapter = new RoomListAdapter(this, new ArrayList<>(), new ArrayList<>(), this);
         recyclerViewRoomList.setAdapter(roomListAdapter);
         recyclerViewRoomList.setLayoutManager(new LinearLayoutManager(this));
     }
 
     private void createGuildListRecycler() {
-        recyclerViewGuildList = findViewById(R.id.guild_list_recycler);
+        RecyclerView recyclerViewGuildList = findViewById(R.id.guild_list_recycler);
         guildListAdapter = new GuildListAdapter(this, new ArrayList<>(), new ArrayList<>(), this);
         recyclerViewGuildList.setAdapter(guildListAdapter);
         recyclerViewGuildList.setLayoutManager(new LinearLayoutManager(this));
@@ -240,7 +283,7 @@ public class GuildServerController extends AppCompatActivity implements RoomList
                 for (QueryDocumentSnapshot document : task.getResult()) {
                     String message = document.get("content").toString();
                     DocumentReference userReference = (DocumentReference) document.get("user");
-                    String date = document.get("id").toString();
+                    String date = document.get("creation_date").toString();
                     String username = "Placeholder";
                     guildMessages.add(new MessageAdapter.GuildMessage(username, date, message));
                     messageAdapter.setMessages(guildMessages);
@@ -322,7 +365,7 @@ public class GuildServerController extends AppCompatActivity implements RoomList
 
     @Override
     public void onGuildClick(int position, ArrayList<GuildListAdapter.GuildListViewHolder> viewHolders) {
-        guildName = String.valueOf(viewHolders.get(position).getGuildName().getText());
+        String guildName = String.valueOf(viewHolders.get(position).getGuildName().getText());
         guildId = String.valueOf(viewHolders.get(position).getGuildId().getText());
         Log.d(TAG, guildName);
         Log.d(TAG, guildId);

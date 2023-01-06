@@ -34,7 +34,7 @@
         <activity android:name=".Controller.ResetPasswordActivityController" android:exported="false" />
 
         <service
-            android:name=".Controller.GuildServerController$MessageService"
+            android:name=".Service.MessageService"
             android:exported="false">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />

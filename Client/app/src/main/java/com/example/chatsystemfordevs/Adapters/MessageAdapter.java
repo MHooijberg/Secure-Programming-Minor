@@ -8,6 +8,7 @@ import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.chatsystemfordevs.Model.Message;
 import com.example.chatsystemfordevs.R;
 
 import java.util.ArrayList;
@@ -22,6 +23,11 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
     {
         this.context = context;
         this.messages = messages;
+    }
+
+    public void addMessageToCollection(GuildMessage message){
+        this.messages.add(message);
+        notifyItemInserted(-1);
     }
 
     @Override
