@@ -49,11 +49,11 @@ public class RegistrationActivityController extends AppCompatActivity implements
 
     public void registerUser() {
         this.button.setOnClickListener(view -> {
-            String usr = username.getText().toString();
-            String usrEmail = email.getText().toString();
-            String phoneInput = phoneNumber.getText().toString();
-            String pass = password.getText().toString();
-            String repeatPass = repeatablePassword.getText().toString();
+            String usr = username.getText().toString().trim();
+            String usrEmail = email.getText().toString().trim();
+            String phoneInput = phoneNumber.getText().toString().trim();
+            String pass = password.getText().toString().trim();
+            String repeatPass = repeatablePassword.getText().toString().trim();
 
             if (!TextUtils.isEmpty(usr) && !TextUtils.isEmpty(usrEmail) && !TextUtils.isEmpty(phoneInput) && !TextUtils.isEmpty(pass)) {
                 if (authenticationManager.isUsernameAlphaNumeric(usr)
