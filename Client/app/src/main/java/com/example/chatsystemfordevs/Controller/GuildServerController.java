@@ -55,8 +55,7 @@ public class GuildServerController extends AppCompatActivity implements RoomList
     private String roomName;
     private String roomId;
     private String guildId;
-
-
+    private ArrayList<DocumentReference> availableGuilds;
     private final BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -128,13 +127,6 @@ public class GuildServerController extends AppCompatActivity implements RoomList
 
         //Connect to database, pull data for messages, guilds and rooms, and insert
         //into respective recycler views
-        guildId = "SampleGuild";
-        roomId = "SampleChannel";
-        roomName = "Github";
-        getMessages(guildId, roomId);
-        getGuilds();
-        getRooms(guildId);
-
 
         sendButton.setOnClickListener(view -> {
             String message = sendMessage.getText().toString();
@@ -235,11 +227,13 @@ public class GuildServerController extends AppCompatActivity implements RoomList
                     for (QueryDocumentSnapshot document : task.getResult()) {
                         this.userDocumentId = document.getId();
                         String id = document.getString("id");
+                        userDocumentId = document.getId();
                         String email = document.getString("email");
                         List<String> guildInfo = (List<String>) document.get("guild");
                         String phoneNumber = document.getString("phoneNumber");
                         String username = document.getString("username");
                         user = new Moderator(id,email,guildInfo,true,phoneNumber,username);
+                        getAvailableGuilds();
                         return;
                     }
                 }else{
@@ -259,7 +253,7 @@ public class GuildServerController extends AppCompatActivity implements RoomList
 
     private void createRoomListRecycler() {
         RecyclerView recyclerViewRoomList = findViewById(R.id.room_list_recycler);
-        roomListAdapter = new RoomListAdapter(this, new ArrayList<>(), new ArrayList<>(), this);
+        roomListAdapter = new RoomListAdapter(this, new ArrayList<>(), this);
         recyclerViewRoomList.setAdapter(roomListAdapter);
         recyclerViewRoomList.setLayoutManager(new LinearLayoutManager(this));
     }
@@ -303,43 +297,21 @@ public class GuildServerController extends AppCompatActivity implements RoomList
         });
     }
 
-    //Get guild data from the database
-    public void getGuilds() {
-        CollectionReference ref = database.getDatabase().collection("Guilds");
-        ArrayList<String> names = new ArrayList<>();
-        ArrayList<String> ids = new ArrayList<>();
-
-        //Make pulling data from the database asynchronous
-        ref.get().addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
-                for (QueryDocumentSnapshot document : task.getResult()) {
-                    names.add(document.getData().get("name").toString());
-                    ids.add(document.getId());
-                }
-                guildListAdapter.setNames(names);
-                guildListAdapter.setIds(ids);
-                guildListAdapter.notifyDataSetChanged();
-            } else {
-                Log.d(TAG, "Error getting documents: ", task.getException());
-            }
-        });
-    }
-
     //Get room data from the database from the given guild
     public void getRooms(String guildId) {
         CollectionReference ref = database.getDatabase().collection("Guilds").document(guildId).collection("Channels");
-        ArrayList<String> names = new ArrayList<>();
-        ArrayList<String> ids = new ArrayList<>();
+        ArrayList<RoomListAdapter.Room> rooms = new ArrayList<>();
+        roomListAdapter.clearViewHolders();
 
         //Makes pulling data from the database asynchronous
         ref.get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 for (QueryDocumentSnapshot document : task.getResult()) {
-                    names.add(document.getData().get("name").toString());
-                    ids.add(document.getId());
+                    RoomListAdapter.Room room = new RoomListAdapter.Room(document.getData().get("name").toString(), document.getId());
+                    rooms.add(room);
                 }
-                roomListAdapter.setNames(names);
-                roomListAdapter.setIds(ids);
+                roomListAdapter.setRooms(rooms);
+                roomListAdapter.clearViewHolders();
                 roomListAdapter.notifyDataSetChanged();
             } else {
                 Log.d(TAG, "Error getting documents: ", task.getException());
@@ -347,12 +319,34 @@ public class GuildServerController extends AppCompatActivity implements RoomList
         });
     }
 
-    public static void clickOnRoom(View view) {
+    public void getAvailableGuilds() {
+        DocumentReference userRef = database.getDatabase().collection("Users").document("1GofRQQrOmgLSQ1n8n6v");
 
+        userRef.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                availableGuilds = (ArrayList<DocumentReference>) task.getResult().get("guild");
+                if (availableGuilds != null) {
+                    for (DocumentReference guildRef : availableGuilds) {
+                        guildRef.get().addOnCompleteListener(task1 -> {
+                            if (task1.isSuccessful() && task1.getResult().getData() != null) {
+                                DocumentSnapshot result = task1.getResult();
+                                Log.d(TAG, String.valueOf(result.getData()));
+                                GuildListAdapter.Guild guild = new GuildListAdapter.Guild(result.get("name").toString(), result.getId());
+                                guildListAdapter.addGuild(guild);
+                            } else {
+                                Log.d(TAG, "getAvailableGuilds: Something went wrong");
+                            }
+                        });
+                    }
+                } else {
+                    Log.d(TAG, "getAvailableGuilds: No guilds");
+                }
+            }
+        });
     }
 
     @Override
-    public void onRoomClick(int position, ArrayList<RoomListAdapter.RoomListViewHolder> viewHolders) {
+    public void onRoomSelect(int position, ArrayList<RoomListAdapter.RoomListViewHolder> viewHolders) {
         roomName = String.valueOf(viewHolders.get(position).getRoomName().getText());
         String selectedRoom = String.valueOf(viewHolders.get(position).getRoomId().getText());
         Log.d(TAG, roomName);
@@ -365,11 +359,10 @@ public class GuildServerController extends AppCompatActivity implements RoomList
     }
 
     @Override
-    public void onGuildClick(int position, ArrayList<GuildListAdapter.GuildListViewHolder> viewHolders) {
+    public void onGuildSelect(int position, ArrayList<GuildListAdapter.GuildListViewHolder> viewHolders) {
         String guildName = String.valueOf(viewHolders.get(position).getGuildName().getText());
         guildId = String.valueOf(viewHolders.get(position).getGuildId().getText());
-        Log.d(TAG, guildName);
-        Log.d(TAG, guildId);
+
         TextView guild_name_text = sideNav.findViewById(R.id.guild_name);
         getRooms(guildId);
         guild_name_text.setText(guildName);

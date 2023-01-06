@@ -83,65 +83,6 @@
                     app:srcCompat="@drawable/gear" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <LinearLayout
-                android:id="@+id/github_api_layout"
-                android:layout_width="match_parent"
-                android:layout_height="42dp"
-                android:orientation="horizontal">
-
-                <ImageView
-                    android:id="@+id/github_icon"
-                    android:layout_width="42dp"
-                    android:layout_height="match_parent"
-                    android:layout_marginStart="8dp"
-                    android:contentDescription="@string/github_logo"
-                    android:scaleX="1"
-                    android:scaleY="1"
-                    app:srcCompat="@drawable/gh_logo" />
-
-                <TextView
-                    android:id="@+id/github_api_text"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="0dp"
-                    android:layout_marginTop="6dp"
-                    android:fontFamily="@font/inputmono_regular"
-                    android:text="@string/github_api"
-                    android:textColor="@color/ghost"
-                    android:textSize="16sp" />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/stackoverflow_api_layout"
-                android:layout_width="match_parent"
-                android:layout_height="42dp"
-                android:orientation="horizontal">
-
-                <ImageView
-                    android:id="@+id/stackoverflow_icon"
-                    android:layout_width="42dp"
-                    android:layout_height="match_parent"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginTop="0dp"
-                    android:contentDescription="@string/stackoverflow_logo"
-                    android:scaleX="0.9"
-                    android:scaleY="0.9"
-                    app:srcCompat="@drawable/so_logo" />
-
-                <TextView
-                    android:id="@+id/stackoverflow_api_text"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="0dp"
-                    android:layout_marginTop="6dp"
-                    android:fontFamily="@font/inputmono_regular"
-                    android:text="@string/stackoverflow_api"
-                    android:textColor="@color/ghost"
-                    android:textSize="16sp" />
-
-            </LinearLayout>
-
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/room_list_recycler"
                 android:layout_width="match_parent"
