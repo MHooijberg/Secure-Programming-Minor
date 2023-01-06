@@ -152,4 +152,9 @@ public class RoomListAdapter extends RecyclerView.Adapter<RoomListAdapter.RoomLi
         void onRoomClick(int position, ArrayList<RoomListViewHolder> viewHolders);
     }
 
+    public void clearViewHolder(){
+        viewHolders.clear();
+        notifyDataSetChanged();
+    }
+
 }

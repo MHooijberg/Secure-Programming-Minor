@@ -152,7 +152,7 @@ public class GuildServerController extends AppCompatActivity implements RoomList
                     typeOfMessage = "text";
                 }
                 Message pojoMessage = new Message(2,message, date,typeOfMessage,reference);
-                    database.sendMessageToDatabase(userDocumentId,roomName,pojoMessage,guildId);
+                    database.sendMessageToDatabase(userDocumentId,roomId,pojoMessage,guildId);
                 }catch (Exception e){
                     sendMessage.setError("There was a problem with sending a message");
                 }
@@ -226,7 +226,6 @@ public class GuildServerController extends AppCompatActivity implements RoomList
         }catch (Exception e){
             sendMessage.setError("There was a problem with retrieving the actual message");
         }
-        
     }
 
     private void getUserInfo(String userEmail){
@@ -279,7 +278,7 @@ public class GuildServerController extends AppCompatActivity implements RoomList
 
         //Make pulling data from the database asynchronous
         ref.get().addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
+            if (task.isSuccessful() && task.getResult().size() != 0) {
                 for (QueryDocumentSnapshot document : task.getResult()) {
                     String message = document.get("content").toString();
                     DocumentReference userReference = (DocumentReference) document.get("user");
@@ -297,10 +296,9 @@ public class GuildServerController extends AppCompatActivity implements RoomList
                     });
                     messageAdapter.notifyDataSetChanged();
                 }
-
-
             } else {
-                Log.d(TAG, "Error getting documents: ", task.getException());
+                messageAdapter.setMessages(guildMessages);
+                messageAdapter.notifyDataSetChanged();
             }
         });
     }
@@ -356,11 +354,14 @@ public class GuildServerController extends AppCompatActivity implements RoomList
     @Override
     public void onRoomClick(int position, ArrayList<RoomListAdapter.RoomListViewHolder> viewHolders) {
         roomName = String.valueOf(viewHolders.get(position).getRoomName().getText());
-        roomId = String.valueOf(viewHolders.get(position).getRoomId().getText());
+        String selectedRoom = String.valueOf(viewHolders.get(position).getRoomId().getText());
         Log.d(TAG, roomName);
         TextView room_name_text = sideMembers.findViewById(R.id.room_name_text);
-        getMessages(guildId, roomId);
-        room_name_text.setText(roomName);
+        if(!roomId.equals(selectedRoom)){
+            roomId = selectedRoom;
+            getMessages(guildId, roomId);
+            room_name_text.setText(roomName);
+        }
     }
 
     @Override

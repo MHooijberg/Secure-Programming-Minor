@@ -105,4 +105,9 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
     public void setMessages(ArrayList<GuildMessage> messages) {
         this.messages = messages;
     }
+
+    public void clearMessages(){
+        messages.clear();
+        notifyDataSetChanged();
+    }
 }
