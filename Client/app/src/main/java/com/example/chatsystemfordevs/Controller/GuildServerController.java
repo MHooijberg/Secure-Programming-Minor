@@ -128,6 +128,9 @@ public class GuildServerController extends AppCompatActivity implements RoomList
         //Connect to database, pull data for messages, guilds and rooms, and insert
         //into respective recycler views
 
+        roomId = "DefaultChannel";
+        guildId = "DefaultGuild";
+
         sendButton.setOnClickListener(view -> {
             String message = sendMessage.getText().toString();
             if(!TextUtils.isEmpty(message))
@@ -260,7 +263,7 @@ public class GuildServerController extends AppCompatActivity implements RoomList
 
     private void createGuildListRecycler() {
         RecyclerView recyclerViewGuildList = findViewById(R.id.guild_list_recycler);
-        guildListAdapter = new GuildListAdapter(this, new ArrayList<>(), new ArrayList<>(), this);
+        guildListAdapter = new GuildListAdapter(this, new ArrayList<>(), this);
         recyclerViewGuildList.setAdapter(guildListAdapter);
         recyclerViewGuildList.setLayoutManager(new LinearLayoutManager(this));
     }
@@ -301,7 +304,6 @@ public class GuildServerController extends AppCompatActivity implements RoomList
     public void getRooms(String guildId) {
         CollectionReference ref = database.getDatabase().collection("Guilds").document(guildId).collection("Channels");
         ArrayList<RoomListAdapter.Room> rooms = new ArrayList<>();
-        roomListAdapter.clearViewHolders();
 
         //Makes pulling data from the database asynchronous
         ref.get().addOnCompleteListener(task -> {
@@ -311,7 +313,6 @@ public class GuildServerController extends AppCompatActivity implements RoomList
                     rooms.add(room);
                 }
                 roomListAdapter.setRooms(rooms);
-                roomListAdapter.clearViewHolders();
                 roomListAdapter.notifyDataSetChanged();
             } else {
                 Log.d(TAG, "Error getting documents: ", task.getException());
