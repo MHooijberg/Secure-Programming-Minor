@@ -101,12 +101,6 @@ public class GuildServerController extends AppCompatActivity implements RoomList
         createRoomListRecycler();
         createGuildListRecycler();
 
-        //Connect to database, pull data for messages, guilds and rooms, and insert
-        //into respective recycler views
-
-//        getGuilds();
-//        getRooms(guildId);
-//        getMessages(guildId, roomId);
     }
 
     @Override
@@ -278,6 +272,7 @@ public class GuildServerController extends AppCompatActivity implements RoomList
     public void getRooms(String guildId) {
         CollectionReference ref = database.getDatabase().collection("Guilds").document(guildId).collection("Channels");
         ArrayList<RoomListAdapter.Room> rooms = new ArrayList<>();
+        roomListAdapter.clearViewHolders();
 
         //Makes pulling data from the database asynchronous
         ref.get().addOnCompleteListener(task -> {
@@ -296,11 +291,11 @@ public class GuildServerController extends AppCompatActivity implements RoomList
     }
 
     public void getAvailableGuilds() {
-        DocumentReference userRef = database.getDatabase().collection("Users").document(userDocumentId);
+        DocumentReference userRef = database.getDatabase().collection("Users").document("1GofRQQrOmgLSQ1n8n6v");
 
         userRef.get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
-                availableGuilds = (ArrayList<DocumentReference>) task.getResult().get("guilds");
+                availableGuilds = (ArrayList<DocumentReference>) task.getResult().get("guild");
                 if (availableGuilds != null) {
                     for (DocumentReference guildRef : availableGuilds) {
                         guildRef.get().addOnCompleteListener(task1 -> {
@@ -317,7 +312,6 @@ public class GuildServerController extends AppCompatActivity implements RoomList
                 } else {
                     Log.d(TAG, "getAvailableGuilds: No guilds");
                 }
-
             }
         });
     }
