@@ -22,7 +22,8 @@ public class AuthenticationManager {
     private static final String emailPatternValidation = "^(?=.{1,64}@)[A-Za-z0-9_-]+(\\.[A-Za-z0-9_-]+)*@"
             + "[^-][A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[A-Za-z]{2,})$";
     private final Pattern illegalCharacters = Pattern.compile("[\\/.<>+*@&()^!\"#$%':;=?_`{}|~]");
-    private static final int usernameLengthLimit = 15;
+    private static final int usernameMaximumLength = 32;
+    private static final int usernameMinimumLength = 2;
 
     public AuthenticationManager() {
         this.firebaseAuth = FirebaseAuth.getInstance();
@@ -68,11 +69,10 @@ public class AuthenticationManager {
     }
 
     public boolean isUsernameAlphaNumeric(String username){
-        if(illegalCharacters.matcher(username).find()){
+        if(illegalCharacters.matcher(username).find() || username.length() < usernameMinimumLength || username.length() > usernameMaximumLength) {
             return false;
         }
         boolean isDigit = false, isAlphabetic = false;
-        if(username.length() > usernameLengthLimit) return false;
 
         for (int i = 0; i< username.length();i++){
             char character = username.charAt(i);

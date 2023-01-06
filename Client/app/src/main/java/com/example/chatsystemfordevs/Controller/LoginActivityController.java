@@ -45,8 +45,6 @@ public class LoginActivityController extends AppCompatActivity {
                 Toast.makeText(this, "Some of the input fields are empty", Toast.LENGTH_SHORT).show();
             }
         });
-
-
     }
 
     public void onBackTextClick(View view){
