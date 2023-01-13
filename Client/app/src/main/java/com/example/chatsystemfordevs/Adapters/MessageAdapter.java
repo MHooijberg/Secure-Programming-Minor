@@ -27,7 +27,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
 
     public void addMessageToCollection(GuildMessage message){
         this.messages.add(message);
-        notifyItemInserted(-1);
+        notifyDataSetChanged();
     }
 
     @Override

@@ -133,6 +133,7 @@ public class GuildServerController extends AppCompatActivity implements RoomList
 
         sendButton.setOnClickListener(view -> {
             String message = sendMessage.getText().toString();
+            sendMessage.setText("");
             if(!TextUtils.isEmpty(message))
             {
                 String typeOfMessage;

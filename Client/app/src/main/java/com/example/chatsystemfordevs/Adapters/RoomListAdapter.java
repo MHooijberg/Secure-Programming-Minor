@@ -50,7 +50,6 @@ public class RoomListAdapter extends RecyclerView.Adapter<RoomListAdapter.RoomLi
     {
         viewHolder.roomName.setText(rooms.get(position).getName());
         viewHolder.roomId.setText(rooms.get(position).getId());
-        viewHolders.add(viewHolder);
     }
 
     @Override
