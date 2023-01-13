@@ -5,6 +5,8 @@ package devlink_server;
 
 import java.util.concurrent.ExecutionException;
 
+import devlink_server.StackExchangeManager.DataType;
+
 public class App {
     public static void main(String[] args) throws UnsupportedOperationException, InterruptedException, ExecutionException {
         FirebaseManager firebaseManager = new FirebaseManager();
@@ -18,5 +20,10 @@ public class App {
                 System.out.println("Stuck in a loop!");
             }
         }
+        // GitHubManager gitHubManager = new GitHubManager();
+        // gitHubManager.Search(GitHubManager.DataType.User, "MHooijberg");
+        // StackExchangeManager stackExchangeManager = new StackExchangeManager();
+        // //stackExchangeManager.Search("Gson - how does it work?");
+        // stackExchangeManager.Get(DataType.Question, "8523057");
     }
 }

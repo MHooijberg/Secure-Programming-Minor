@@ -23,11 +23,12 @@ import com.google.firebase.messaging.MulticastMessage.Builder;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
 import java.util.Map;
+import java.util.Stack;
 import java.util.concurrent.ExecutionException;
 
 import javax.annotation.Nullable;
 
-import org.conscrypt.OpenSSLEvpCipherAES.AES.ECB;
+//import org.conscrypt.OpenSSLEvpCipherAES.AES.ECB;
 
 import com.google.api.core.ApiFuture;
 import com.google.api.core.SettableApiFuture;
@@ -43,7 +44,7 @@ import com.google.firebase.messaging.Message;
 import com.google.firestore.v1.Document;
 
 import devlink_server.FCMMessageData.ObjectType;
-import io.grpc.netty.shaded.io.netty.channel.MessageSizeEstimator;
+//import io.grpc.netty.shaded.io.netty.channel.MessageSizeEstimator;
 
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
@@ -133,7 +134,7 @@ public class FirebaseManager {
         System.out.println("Successfully sent message: " + response);
     }
 
-    public void FCMSendMulticast(List<String> registrationTokens, FCMMessageData.ObjectType objectType, String objectId){
+    public void FCMSendMulticast(List<String> registrationTokens, FCMMessageData.ObjectType objectType, String objectReference){
         // The following information need to be send over:
         // Action: Create, Read, Update, Delete
         // Objects Type: Channel, Guild, Message or User
@@ -146,7 +147,7 @@ public class FirebaseManager {
             // Save the object type of the object it needs to handle.
             .putData("object type", objectType.name().toLowerCase())
             // Save the id of the object it needs to change.
-            .putData("object id", objectId)
+            .putData("object reference", objectReference)
         // Set the registration tokens (devices) the message has to be send to.
             .addAllTokens(registrationTokens)
         // Set the configuration for the Android platform.
@@ -197,7 +198,7 @@ public class FirebaseManager {
             // Save the object type of the object it needs to handle.
             .putData("object type", messageData.getObjectType().name().toLowerCase())
             // Save the id of the object it needs to change.
-            .putData("object id", messageData.getObjectId())
+            .putData("object reference", messageData.getObjectId())
         // Set the registration tokens (devices) the message has to be send to.
             .addAllTokens(messageData.getRegistrationTokens());
 
@@ -274,6 +275,26 @@ public class FirebaseManager {
     }
 
     public void DatabaseReadExample() throws InterruptedException, ExecutionException
+    {
+        // Get a document reference from the Firestore database based on a collection and selected document.
+        DocumentReference docRef = firestoreInstance.collection("Guilds").document("SampleGuild");
+        // asynchronously retrieve the document
+        ApiFuture<DocumentSnapshot> future = docRef.get();
+        // future.get() blocks on response
+        // Get the actual snapshot document. (Snapshot is basically a fancy word for the result of the query at this current time.)
+        DocumentSnapshot document = future.get();
+        // If it exists continue filling or returning data.
+        if (document.exists())
+        {
+            // Print document data.
+            System.out.println("Document data: " + document.getData());
+        }else
+        {
+            System.out.println("No such document!");
+        }
+    }
+
+    public void DatabaseCreateMessage() throws InterruptedException, ExecutionException
     {
         // Get a document reference from the Firestore database based on a collection and selected document.
         DocumentReference docRef = firestoreInstance.collection("Guilds").document("SampleGuild");
@@ -457,10 +478,11 @@ public class FirebaseManager {
                                             for (Map.Entry<String, ArrayList<DocumentReference>> Role : guildUserList.entrySet())
                                             {
                                                 for (DocumentReference userReference : Role.getValue())
-                                                    if (!userReference.getPath().equals(author.getPath()))
-                                                    {
-                                                        userReferences.add(userReference);
-                                                    }
+                                                    userReferences.add(userReference);
+                                                    // if (!userReference.getPath().equals(author.getPath()))
+                                                    // {
+                                                    //     userReferences.add(userReference);
+                                                    // }
                                             }
                                             
                                             // Retrieve all register tokens from those users.
@@ -472,7 +494,7 @@ public class FirebaseManager {
                                                 "#00ffff", 
                                                 "", 
                                                 "Message Received in DevLink", 
-                                                message.getId(), 
+                                                message.getReference().getPath(), 
                                                 ObjectType.MESSAGE, 
                                                 registrationTokens
                                                 );
@@ -482,18 +504,74 @@ public class FirebaseManager {
                                             e1.printStackTrace();
                                         }
                                     }
-                                    else if (type.equals("text"))
+                                    else if (type.equals("command"))
                                     {
                                         // TODO: Change this from sting to a enumeration type.
-                                        switch (message.getString("content").toLowerCase())
+                                        String body = "";
+                                        String[] command = message.getString("content").toLowerCase().split(" ");
+                                        switch (command[0])
                                         {
                                             case "github":
-                                                break;
+                                            switch (command[1])
+                                            {
+                                                case "get":
+                                                    // TODO: Could be simplified by changing into a string. Enums is unncessasary.
+                                                    switch (command[2])
+                                                    {
+                                                        case "commit":
+                                                            body = gitHubManager.Search(GitHubManager.DataType.Commit, command[3]);
+                                                            break;
+                                                        case "repository":
+                                                            body = gitHubManager.Search(GitHubManager.DataType.Repository, command[3]);
+                                                            break;
+                                                        case "user":
+                                                            body = gitHubManager.Search(GitHubManager.DataType.User, command[3]);
+                                                            break;
+                                                    }
+                                                    break;
+                                                case "search":
+                                                    switch (command[2])
+                                                    {
+                                                        case "commit":
+                                                            body = gitHubManager.Search(GitHubManager.DataType.Commit, command[3]);
+                                                            break;
+                                                        case "repository":
+                                                            body = gitHubManager.Search(GitHubManager.DataType.Repository, command[3]);
+                                                            break;
+                                                        case "user":
+                                                            body = gitHubManager.Search(GitHubManager.DataType.User, command[3]);
+                                                            break;
+                                                    }
+                                                    break;
+                                            }
+                                            break;
                                             case "stackexchange":
+                                                switch (command[1])
+                                                {
+                                                    case "get":
+                                                        // TODO: Could be simplified by changing into a string. Enums is unncessasary.
+                                                        switch (command[2])
+                                                        {
+                                                            case "answer":
+                                                                body = stackExchangeManager.Get(StackExchangeManager.DataType.Answer, command[3]);
+                                                                break;
+                                                            case "question":
+                                                                body = stackExchangeManager.Get(StackExchangeManager.DataType.Question, command[3]);
+                                                                break;
+                                                            case "user":
+                                                                body = stackExchangeManager.Get(StackExchangeManager.DataType.User, command[3]);
+                                                                break;
+                                                        }
+                                                        break;
+                                                    case "search":
+                                                        body = stackExchangeManager.Search(command[2]);
+                                                        break;
+                                                }
                                                 break;
                                             case "dataverse":
                                                 break;
                                         }
+                                        // DatabaseCreateMessage();
                                     }
                                     else
                                         System.out.println("Faulty message!");
