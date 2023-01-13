@@ -68,9 +68,34 @@ public class StackExchangeManager {
             String json = apiManager.ResponseHandler(connection);
             json = json.replace("{\"items\":", "").split(",\"has_more\":false,\"quota_max\":300,\"quota_remaining\"")[0];
 
-            Question[] result = gson.fromJson(json, Question[].class);
+            Question[] apiResult = gson.fromJson(json, Question[].class);
 
-            body = "";
+            for (int i = 0; i < apiResult.length; i++)
+            {
+                if (i == 0)
+                    body = "";
+                    
+                body += java.text.MessageFormat.format(
+                    "==== Question ====\n" +
+                    "Title: {0}\n" +
+                    "Body: {1}\n\n" +
+                    "Author: {2}\n" +
+                    "Author Id: {3}\n" +
+                    "View Count: {4}\n",
+                    "Up votes: {5}\n",
+                    "Link: {6}\n",
+                    apiResult[0].getTitle(),
+                    apiResult[0].getBody(),
+                    apiResult[0].getOwner().getDisplay_name(),
+                    apiResult[0].getOwner().getAccount_id(),
+                    apiResult[0].getView_count(),
+                    apiResult[0].getUp_vote_count(),
+                    apiResult[0].getLink()                    
+                );
+                
+                if (i < apiResult.length - 1)
+                    body += "\n\n";
+            }
         }
         catch (IllegalArgumentException | IOException | UnsupportedOperationException e){
             System.out.println(e);

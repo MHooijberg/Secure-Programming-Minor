@@ -77,18 +77,48 @@ public class GitHubManager {
             HttpsURLConnection connection = null;
             if(type == DataType.Commit){
                 connection = apiManager.RequestBuilder(endpoints.get("search commit"), new HashMap<String, String>(){{put("q", query);}}, "GET");
-                String apiResult = apiManager.ResponseHandler(connection);
+                String json = apiManager.ResponseHandler(connection);
 
+                Commit[] apiResult = gson.fromJson(json, Commit[].class);
+                for (int i = 0; i < apiResult.length; i++)
+                {
+                    if (i == 0)
+                        body = "";
+                    body += BuildString(apiResult[i]);
+                    
+                    if (i < apiResult.length - 1)
+                        body += "\n\n";
+                }
             }
             else if(type == DataType.Repository){
                 connection = apiManager.RequestBuilder(endpoints.get("search repository"), new HashMap<String, String>(){{put("q", query);}}, "GET");
-                String apiResult = apiManager.ResponseHandler(connection);
+                String json = apiManager.ResponseHandler(connection);
 
+                Repository[] apiResult = gson.fromJson(json, Repository[].class);
+                for (int i = 0; i < apiResult.length; i++)
+                {
+                    if (i == 0)
+                        body = "";
+                    body += BuildString(apiResult[i]);
+                    
+                    if (i < apiResult.length - 1)
+                        body += "\n\n";
+                }
             }
             else if(type == DataType.User){
                 connection = apiManager.RequestBuilder(endpoints.get("search users"), new HashMap<String, String>(){{put("q", query);}}, "GET");
-                String apiResult = apiManager.ResponseHandler(connection);
+                String json = apiManager.ResponseHandler(connection);
 
+                GitHubUser[] apiResult = gson.fromJson(json, GitHubUser[].class);
+                for (int i = 0; i < apiResult.length; i++)
+                {
+                    if (i == 0)
+                        body = "";
+                    body += BuildString(apiResult[i]);
+                    
+                    if (i < apiResult.length - 1)
+                        body += "\n\n";
+                }
             }
         }
         catch (IllegalArgumentException | IOException | UnsupportedOperationException e){
@@ -106,23 +136,7 @@ public class GitHubManager {
             
             Commit apiResult = gson.fromJson(json, Commit.class);
 
-            body = java.text.MessageFormat.format(
-                    "==== Commit ====\n" +
-                    "Link: {0}\n" +
-                    "SHA: {1}\n" +
-                    "Author Name: {2}\n" +
-                    "Author Email: {3}\n" +
-                    "Committer Name: {4}\n" +
-                    "Committer Email: {5}\n" +
-                    "Message: {6}\n",
-                    apiResult.getHtml_url(),
-                    apiResult.getSha(),
-                    apiResult.getAuthor().getName(),
-                    apiResult.getAuthor().getEmail(),
-                    apiResult.getCommitter().getName(),                    
-                    apiResult.getCommitter().getEmail(),
-                    apiResult.getMessage()                    
-                );
+            return BuildString(apiResult);
             
         }
         catch (IllegalArgumentException | IOException | UnsupportedOperationException e){
@@ -139,23 +153,7 @@ public class GitHubManager {
             
             Repository apiResult = gson.fromJson(json, Repository.class);
 
-            body = java.text.MessageFormat.format(
-                    "==== Repository ====\n" +
-                    "Id: {0}\n" +
-                    "Owner name: {1}\n" +
-                    "Is Private: {2}\n" +
-                    "Name: {3}\n" +
-                    "Title: {4}\n" +
-                    "Description: {5}\n" +
-                    "Link: {6}\n",
-                    apiResult.getId(),
-                    apiResult.getOwner().getName(),
-                    apiResult.getIsPrivate(),
-                    apiResult.getName(),
-                    apiResult.getTitle(),
-                    apiResult.getDescription(),
-                    apiResult.getHtml_url()                    
-                );
+            return BuildString(apiResult);
         }
         catch (IllegalArgumentException | IOException | UnsupportedOperationException e){
             System.out.println(e);
@@ -170,30 +168,71 @@ public class GitHubManager {
             String json = apiManager.ResponseHandler(connection);
             
             GitHubUser apiResult = gson.fromJson(json, GitHubUser.class);
-
-            body = java.text.MessageFormat.format(
-                    "==== User ====\n" +
-                    "Id: {0}\n" +
-                    "User Name: {1}\n" +
-                    "Company: {2}\n" +
-                    "Location: {3}\n" +
-                    "Email: {4}\n" +
-                    "Bio: {5}\n" +
-                    "Blog: {6}\n" +
-                    "Link: {7}\n",
-                    apiResult.getId(),
-                    apiResult.getName(),
-                    apiResult.getCompany(),
-                    apiResult.getLocation(),
-                    apiResult.getEmail(),
-                    apiResult.getBio(),
-                    apiResult.getBlog(),
-                    apiResult.getHtml_url()                    
-                );
+            return BuildString(apiResult);
         }
         catch (IllegalArgumentException | IOException | UnsupportedOperationException e){
             System.out.println(e);
         }
         return body;
+    }
+
+    private String BuildString(Commit data){
+        return java.text.MessageFormat.format(
+            "==== Commit ====\n" +
+            "Link: {0}\n" +
+            "SHA: {1}\n" +
+            "Author Name: {2}\n" +
+            "Author Email: {3}\n" +
+            "Committer Name: {4}\n" +
+            "Committer Email: {5}\n" +
+            "Message: {6}\n",
+            data.getHtml_url(),
+            data.getSha(),
+            data.getAuthor().getName(),
+            data.getAuthor().getEmail(),
+            data.getCommitter().getName(),                    
+            data.getCommitter().getEmail(),
+            data.getMessage()                    
+        );
+    }
+    private String BuildString(Repository data){
+        return java.text.MessageFormat.format(
+            "==== Repository ====\n" +
+            "Id: {0}\n" +
+            "Owner name: {1}\n" +
+            "Is Private: {2}\n" +
+            "Name: {3}\n" +
+            "Title: {4}\n" +
+            "Description: {5}\n" +
+            "Link: {6}\n",
+            data.getId(),
+            data.getOwner().getName(),
+            data.getIsPrivate(),
+            data.getName(),
+            data.getTitle(),
+            data.getDescription(),
+            data.getHtml_url()                    
+        );
+    }
+    private String BuildString(GitHubUser data){
+        return java.text.MessageFormat.format(
+            "==== User ====\n" +
+            "Id: {0}\n" +
+            "User Name: {1}\n" +
+            "Company: {2}\n" +
+            "Location: {3}\n" +
+            "Email: {4}\n" +
+            "Bio: {5}\n" +
+            "Blog: {6}\n" +
+            "Link: {7}\n",
+            data.getId(),
+            data.getName(),
+            data.getCompany(),
+            data.getLocation(),
+            data.getEmail(),
+            data.getBio(),
+            data.getBlog(),
+            data.getHtml_url()                    
+        );
     }
 }
