@@ -1,7 +1,5 @@
 package com.example.chatsystemfordevs.Controller;
 
-import static android.service.controls.ControlsProviderService.TAG;
-
 import android.annotation.SuppressLint;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -29,19 +27,26 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.chatsystemfordevs.Adapters.GuildListAdapter;
 import com.example.chatsystemfordevs.Adapters.MessageAdapter;
 import com.example.chatsystemfordevs.Adapters.RoomListAdapter;
+import com.example.chatsystemfordevs.Cryptography.CryptographyManager;
 import com.example.chatsystemfordevs.Model.Message;
 import com.example.chatsystemfordevs.R;
 import com.example.chatsystemfordevs.User.Moderator;
 import com.example.chatsystemfordevs.Utilities.CommandKeywords;
 import com.example.chatsystemfordevs.Utilities.DBHelper;
+import com.google.firebase.firestore.Blob;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 
 public class GuildServerController extends AppCompatActivity implements RoomListAdapter.OnRoomListener, GuildListAdapter.OnGuildListener {
     private DBHelper database;
@@ -56,6 +61,10 @@ public class GuildServerController extends AppCompatActivity implements RoomList
     private String roomId;
     private String guildId;
     private ArrayList<DocumentReference> availableGuilds;
+    private CryptographyManager cryptographyManager;
+    private static final String TAG = "GuildServerController";
+
+
     private final BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -89,8 +98,9 @@ public class GuildServerController extends AppCompatActivity implements RoomList
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_guildserverview);
         Bundle extras = getIntent().getExtras();
-        //retrieve the data from the database based on the id such as a username
+        cryptographyManager = new CryptographyManager();
 
+        //retrieve the data from the database based on the id such as a username
         String userEmail = extras.getString("userEmail");
         database = new DBHelper();
         this.getUserInfo(userEmail);
@@ -130,7 +140,6 @@ public class GuildServerController extends AppCompatActivity implements RoomList
 
         roomId = "DefaultChannel";
         guildId = "DefaultGuild";
-
         sendButton.setOnClickListener(view -> {
             String message = sendMessage.getText().toString();
             sendMessage.setText("");
@@ -147,7 +156,8 @@ public class GuildServerController extends AppCompatActivity implements RoomList
                 }else{
                     typeOfMessage = "text";
                 }
-                Message pojoMessage = new Message(2,message, date,typeOfMessage,reference);
+                Blob encryptedMessage = cryptographyManager.encryptMessage(message);
+                Message pojoMessage = new Message(2,encryptedMessage, date,typeOfMessage,reference,cryptographyManager.getVector());
                     database.sendMessageToDatabase(userDocumentId,roomId,pojoMessage,guildId);
                 }catch (Exception e){
                     sendMessage.setError("There was a problem with sending a message");
@@ -156,6 +166,7 @@ public class GuildServerController extends AppCompatActivity implements RoomList
                 sendMessage.setError("You cannot send an empty message");
             }
         });
+
     }
 
     @Override
@@ -206,13 +217,21 @@ public class GuildServerController extends AppCompatActivity implements RoomList
                 if(task.isSuccessful()){
                     DocumentSnapshot user = task.getResult();
                     if(user != null){
-                        String content = task.getResult().getString("content");
+                        String content = "User message";
+                        Blob encryptedMessage = (Blob) task.getResult().get("content");
+                        Blob initializationVector = (Blob) task.getResult().get("initializationVector");
+                        try {
+                            content = this.cryptographyManager.decryptMessage(encryptedMessage,initializationVector);
+                        } catch (BadPaddingException | NoSuchPaddingException | NoSuchAlgorithmException | IllegalBlockSizeException e) {
+                            Log.d(TAG,e.getMessage());
+                        }
                         String creationDate = task.getResult().getString("creation_date");
                         DocumentReference sender = (DocumentReference) task.getResult().get("user");
+                        String finalContent = content;
                         sender.get().addOnCompleteListener(user1 -> {
                             if(user1.isSuccessful()){
                                 String username = user1.getResult().getString("username");
-                                MessageAdapter.GuildMessage message = new MessageAdapter.GuildMessage(username,creationDate,content);
+                                MessageAdapter.GuildMessage message = new MessageAdapter.GuildMessage(username,creationDate, finalContent);
                                 messageAdapter.addMessageToCollection(message);
                             }
                         });
@@ -220,7 +239,7 @@ public class GuildServerController extends AppCompatActivity implements RoomList
                 }
             });
         }catch (Exception e){
-            sendMessage.setError("There was a problem with retrieving the actual message");
+            sendMessage.setError("There was a problem with retrieving the actual message"+ e.getMessage());
         }
     }
 
@@ -275,30 +294,41 @@ public class GuildServerController extends AppCompatActivity implements RoomList
         ArrayList<MessageAdapter.GuildMessage> guildMessages = new ArrayList<>();
 
         //Make pulling data from the database asynchronous
-        ref.get().addOnCompleteListener(task -> {
-            if (task.isSuccessful() && task.getResult().size() != 0) {
-                for (QueryDocumentSnapshot document : task.getResult()) {
-                    String message = document.get("content").toString();
-                    DocumentReference userReference = (DocumentReference) document.get("user");
-                    String date = document.get("creation_date").toString();
-                    String username = "Placeholder";
-                    guildMessages.add(new MessageAdapter.GuildMessage(username, date, message));
-                    messageAdapter.setMessages(guildMessages);
-                    userReference.get().addOnCompleteListener(task1 -> {
-                        if (task1.isSuccessful()) {
-                            for (int i = 0; i < messageAdapter.getItemCount(); i++) {
-                                messageAdapter.getMessages().get(i).setUsername(task1.getResult().get("username").toString());
-                            }
+        try {
+            ref.get().addOnCompleteListener(task -> {
+                String message = "User message";
+                if (task.isSuccessful() && task.getResult().size() != 0) {
+                    for (QueryDocumentSnapshot document : task.getResult()) {
+                        Blob byteMessage = (Blob) document.get("content");
+                        Blob initializationVector = (Blob) document.get("initializationVector");
+                        try {
+                            message = this.cryptographyManager.decryptMessage(byteMessage,initializationVector);
+                        } catch (BadPaddingException | NoSuchPaddingException | NoSuchAlgorithmException | IllegalBlockSizeException e) {
+                            Log.d(TAG,e.getMessage());
                         }
+                        DocumentReference userReference = (DocumentReference) document.get("user");
+                        String date = document.get("creation_date").toString();
+                        String username = "Placeholder";
+                        guildMessages.add(new MessageAdapter.GuildMessage(username, date, message));
+                        messageAdapter.setMessages(guildMessages);
+                        userReference.get().addOnCompleteListener(task1 -> {
+                            if (task1.isSuccessful()) {
+                                for (int i = 0; i < messageAdapter.getItemCount(); i++) {
+                                    messageAdapter.getMessages().get(i).setUsername(task1.getResult().get("username").toString());
+                                }
+                            }
+                            messageAdapter.notifyDataSetChanged();
+                        });
                         messageAdapter.notifyDataSetChanged();
-                    });
+                    }
+                } else {
+                    messageAdapter.setMessages(guildMessages);
                     messageAdapter.notifyDataSetChanged();
                 }
-            } else {
-                messageAdapter.setMessages(guildMessages);
-                messageAdapter.notifyDataSetChanged();
-            }
-        });
+            });
+        }catch (Exception e){
+            Log.d(TAG,e.getMessage());
+        }
     }
 
     //Get room data from the database from the given guild
@@ -322,7 +352,7 @@ public class GuildServerController extends AppCompatActivity implements RoomList
     }
 
     public void getAvailableGuilds() {
-        DocumentReference userRef = database.getDatabase().collection("Users").document("1GofRQQrOmgLSQ1n8n6v");
+        DocumentReference userRef = database.getDatabase().collection("Users").document(userDocumentId);
 
         userRef.get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {

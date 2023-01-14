@@ -1,22 +1,34 @@
 package com.example.chatsystemfordevs.Model;
 
+import com.google.firebase.firestore.Blob;
 import com.google.firebase.firestore.DocumentReference;
 
 import java.util.Date;
 
 public class Message {
-    private String content;
+    private Blob content;
     private String creation_date;
     private String type;
     private DocumentReference user;
     private int id;
+    private Blob initializationVector;
 
-    public Message(int id, String content, String creation_date, String type, DocumentReference user) {
+    public Message(int id, Blob content, String creation_date, String type, DocumentReference user,Blob vector) {
         this.content = content;
         this.creation_date = creation_date;
         this.type = type;
         this.user = user;
         this.id = id;
+        this.initializationVector = vector;
+
+    }
+
+    public Blob getInitializationVector() {
+        return initializationVector;
+    }
+
+    public void setInitializationVector(Blob initializationVector) {
+        this.initializationVector = initializationVector;
     }
 
     public int getId() {
@@ -27,11 +39,11 @@ public class Message {
         this.id = id;
     }
 
-    public String getContent() {
+    public Blob getContent() {
         return content;
     }
 
-    public void setContent(String content) {
+    public void setContent(Blob content) {
         this.content = content;
     }
 
