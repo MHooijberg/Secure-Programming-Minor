@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="big_login_button" parent="@style/Widget.MaterialComponents.Button">
+        <item name="background">?attr/colorSecondary</item>
+        <item name="backgroundTint">?attr/colorSecondary</item>
+        <item name="android:textColor">?attr/colorOnSecondary</item>
+        <item name="android:textSize">48sp</item>
+        <item name="cornerRadius">0dp</item>
+        <item name="textAllCaps">false</item>
+    </style>
+    <style name="auth_button" parent="@style/Widget.MaterialComponents.Button">
+        <item name="background">?attr/colorSecondary</item>
+        <item name="backgroundTint">?attr/colorSecondary</item>
+        <item name="android:textColor">?attr/colorOnSecondary</item>
+        <item name="android:textSize">34sp</item>
+        <item name="cornerRadius">32sp</item>
+        <item name="textAllCaps">false</item>
+    </style>
+    <style name="title_text">
+        <item name="android:textSize">60sp</item>
+        <item name="android:textColor">?attr/colorSecondary</item>
+        <item name="fontFamily">@font/inputmono_medium</item>
+    </style>
+    <style name="guild_list_item">
+        <item name="android:backgroundTint">?attr/colorSecondary</item>
+        <item name="android:layout_width">67dp</item>
+        <item name="android:layout_height">67dp</item>
+        <item name="cardCornerRadius">100dp</item>
+    </style>
+</resources>
