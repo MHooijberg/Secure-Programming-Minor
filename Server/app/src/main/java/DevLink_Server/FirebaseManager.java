@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
+import com.google.api.client.util.DateTime;
 import com.google.api.core.ApiFuture;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.cloud.firestore.DocumentReference;
@@ -36,6 +37,7 @@ import com.google.auth.oauth2.GoogleCredentials;
 import com.google.cloud.firestore.DocumentReference;
 import com.google.cloud.firestore.DocumentSnapshot;
 import com.google.cloud.firestore.EventListener;
+import com.google.cloud.firestore.FieldValue;
 import com.google.cloud.firestore.Firestore;
 import com.google.cloud.firestore.FirestoreException;
 import com.google.firebase.cloud.FirestoreClient;
@@ -48,6 +50,7 @@ import devlink_server.FCMMessageData.ObjectType;
 
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
+import com.google.cloud.firestore.CollectionReference;
 import com.google.cloud.firestore.DocumentChange;
 import com.google.cloud.firestore.DocumentChange.Type;
 import com.google.cloud.storage.Acl.User;
@@ -56,6 +59,7 @@ import com.google.cloud.firestore.Query;
 import com.google.cloud.firestore.QueryDocumentSnapshot;
 import com.google.cloud.firestore.QuerySnapshot;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -294,24 +298,32 @@ public class FirebaseManager {
         }
     }
 
-    public void DatabaseCreateMessage() throws InterruptedException, ExecutionException
+    public void DatabaseCreateMessage(CollectionReference collection, String body)
     {
-        // Get a document reference from the Firestore database based on a collection and selected document.
-        DocumentReference docRef = firestoreInstance.collection("Guilds").document("SampleGuild");
-        // asynchronously retrieve the document
-        ApiFuture<DocumentSnapshot> future = docRef.get();
-        // future.get() blocks on response
-        // Get the actual snapshot document. (Snapshot is basically a fancy word for the result of the query at this current time.)
-        DocumentSnapshot document = future.get();
-        // If it exists continue filling or returning data.
-        if (document.exists())
-        {
-            // Print document data.
-            System.out.println("Document data: " + document.getData());
-        }else
-        {
-            System.out.println("No such document!");
+        int lastId = 0;
+
+        try {
+            lastId = collection
+                .orderBy("id")
+                .limit(1)
+                .get()
+                .get()
+                .getDocuments()
+                .get(0)
+                .get("id", Integer.class);
+        } catch (InterruptedException | ExecutionException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
         }
+
+        Map<String, Object> data = new HashMap<>();
+        data.put("content", body);
+        data.put("creation_date", FieldValue.serverTimestamp());
+        data.put("id", lastId);
+        data.put("type", "text");
+        data.put("user", firestoreInstance.collection("Users").document("Server"));
+
+        collection.add(data);
     }
 
     private List<DocumentChange> HandleChangedChannels() throws Exception {
@@ -463,48 +475,44 @@ public class FirebaseManager {
                                 {
                                     QueryDocumentSnapshot message = documents.get(i).getDocument();
                                     String type = message.getString("type");
-                                    if (type.equals("text"))
-                                    {
-                                        try {
-                                            // Get information about the message: Which guild it was send it, and by who.
-                                            DocumentReference author = (DocumentReference) message.get("user");
-                                            DocumentSnapshot guild = message.getReference().getParent().getParent().getParent().getParent().get().get();
-                                            
-                                            
-                                            List<DocumentReference> userReferences = new ArrayList<DocumentReference>();
-                                            HashMap<String, ArrayList<DocumentReference>> guildUserList = (HashMap<String, ArrayList<DocumentReference>>) guild.get("users");
-                                            
-                                            // Get all the DocumentReferences to the users in that specific guild
-                                            for (Map.Entry<String, ArrayList<DocumentReference>> Role : guildUserList.entrySet())
-                                            {
-                                                for (DocumentReference userReference : Role.getValue())
-                                                    userReferences.add(userReference);
-                                                    // if (!userReference.getPath().equals(author.getPath()))
-                                                    // {
-                                                    //     userReferences.add(userReference);
-                                                    // }
-                                            }
-                                            
-                                            // Retrieve all register tokens from those users.
-                                            List<String> registrationTokens = GetUserRegistrationTokens(userReferences);
-                                            // Create a message with notification.
-                                            FCMMessageData messageSettings = new FCMMessageData(
-                                                true, 
-                                                "Received a new message in <Guild Name>", 
-                                                "#00ffff", 
-                                                "", 
-                                                "Message Received in DevLink", 
-                                                message.getReference().getPath(), 
-                                                ObjectType.MESSAGE, 
-                                                registrationTokens
-                                                );
-                                            // Send that message to all clients.
-                                            FCMSendMulticast(messageSettings);
-                                        } catch (InterruptedException | ExecutionException e1) {
-                                            e1.printStackTrace();
+                                    FCMMessageData messageSettings = null;
+                                    try {
+                                        // Get information about the message: Which guild it was send it, and by who.
+                                        //DocumentReference author = (DocumentReference) message.get("user");
+                                        DocumentSnapshot guild = message.getReference().getParent().getParent().getParent().getParent().get().get();
+                                        
+                                        List<DocumentReference> userReferences = new ArrayList<DocumentReference>();
+                                        HashMap<String, ArrayList<DocumentReference>> guildUserList = (HashMap<String, ArrayList<DocumentReference>>) guild.get("users");
+                                        
+                                        // Get all the DocumentReferences to the users in that specific guild
+                                        for (Map.Entry<String, ArrayList<DocumentReference>> Role : guildUserList.entrySet())
+                                        {
+                                            for (DocumentReference userReference : Role.getValue())
+                                                userReferences.add(userReference);
+                                                // if (!userReference.getPath().equals(author.getPath()))
+                                                // {
+                                                //     userReferences.add(userReference);
+                                                // }
                                         }
+                                        
+                                        // Retrieve all register tokens from those users.
+                                        List<String> registrationTokens = GetUserRegistrationTokens(userReferences);
+                                        // Create a message with notification.
+                                        messageSettings = new FCMMessageData(
+                                            true, 
+                                            "Received a new message in <Guild Name>", 
+                                            "#00ffff", 
+                                            "", 
+                                            "Message Received in DevLink", 
+                                            message.getReference().getPath(), 
+                                            ObjectType.MESSAGE, 
+                                            registrationTokens
+                                            );
+                                    } catch (InterruptedException | ExecutionException e1) {
+                                        e1.printStackTrace();
                                     }
-                                    else if (type.equals("command"))
+                                    
+                                    if (type.equals("command"))
                                     {
                                         // TODO: Change this from sting to a enumeration type.
                                         String body = "";
@@ -571,11 +579,12 @@ public class FirebaseManager {
                                             case "dataverse":
                                                 break;
                                         }
-                                        // DatabaseCreateMessage();
+                                        DatabaseCreateMessage(message.getReference().getParent(), body);
                                     }
-                                    else
-                                        System.out.println("Faulty message!");
+                                    // Send that message to all clients.
+                                    FCMSendMulticast(messageSettings);
                                 }
+                                
                             }
                             //System.out.println(documents);
 
