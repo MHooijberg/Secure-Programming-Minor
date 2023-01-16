@@ -14,4 +14,4 @@ Respectivly we have two folders: Client and Server.
 ## General Information
 Target: Android
 Application: Chatting app for developers.
-API's: StackOverflow, GithubAPI, WeatherAPI
+API's: StackOverflow, GithubAPI, CBSAPI
