@@ -32,6 +32,7 @@ public class AuthenticationManager {
     }
 
     public void registerUser(Context context, String username, String email, String password, String phoneNumber) {
+        //Register user and creates his account
         firebaseAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener((Activity) context, task -> {
                     if (task.isSuccessful() && firebaseAuth.getCurrentUser() != null) {
@@ -49,11 +50,11 @@ public class AuthenticationManager {
     }
 
     public void loginUsername(Activity activity,String email, String password) {
+        //Singing in user with email and password.
         firebaseAuth.signInWithEmailAndPassword(email,password).addOnCompleteListener(activity, task -> {
                     if (task.isSuccessful()) {
                         if(Objects.requireNonNull(this.firebaseAuth.getCurrentUser()).isEmailVerified()){
                             String userEmail = Objects.requireNonNull(task.getResult().getUser()).getEmail();
-
                             Intent loginPage = new Intent(activity, GuildServerController.class);
                             loginPage.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                             loginPage.putExtra("userEmail",userEmail);
@@ -63,12 +64,13 @@ public class AuthenticationManager {
                             Toast.makeText(activity, "The email needs to be verified before the app can be used", Toast.LENGTH_SHORT).show();
                         }
                     } else {
-                        Log.d(TAG, task.getException().getMessage());
+                        Toast.makeText(activity, "Some of the input fields are wrong", Toast.LENGTH_SHORT).show();
                     }
                 });
     }
 
     public boolean isUsernameAlphaNumeric(String username){
+        //Checks if a username contains numbers and letters
         if(illegalCharacters.matcher(username).find() || username.length() < usernameMinimumLength || username.length() > usernameMaximumLength) {
             return false;
         }
@@ -87,12 +89,14 @@ public class AuthenticationManager {
     }
 
     public boolean isEmailValid(String email){
+        //Validates the email based on the pattern validation
         Pattern pattern = Pattern.compile(emailPatternValidation);
         Matcher matcher = pattern.matcher(email);
         return matcher.find();
     }
 
     private void verifyEmail(Context context){
+        //Sends a email verification message to the user's email
         Objects.requireNonNull(this.firebaseAuth.getCurrentUser()).sendEmailVerification().addOnCompleteListener(emailTask -> {
             if(emailTask.isSuccessful()){
                 Toast.makeText(context, "Email verification has been send", Toast.LENGTH_SHORT).show();
@@ -116,6 +120,7 @@ public class AuthenticationManager {
     }
 
     private boolean validateCharacters(@NonNull String password) {
+        //Validates password against length, special characters, numbers
         Pattern pattern = Pattern.compile("[a-zA-Z0-9]*");
         boolean hasNum = false;
         boolean hasCapital = false;

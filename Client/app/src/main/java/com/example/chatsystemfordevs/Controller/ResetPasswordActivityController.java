@@ -28,6 +28,7 @@ public class ResetPasswordActivityController extends AppCompatActivity {
 
 
     public void onNextButtonClick(View view){
+        //validates if the email is valid for changing a password
         EditText email_edit_text = findViewById(R.id.email_edit_text);
         String email = email_edit_text.getText().toString();
         if (email.isEmpty()) {
@@ -48,7 +49,7 @@ public class ResetPasswordActivityController extends AppCompatActivity {
                 } else {
                     Toast.makeText(
                             this,
-                            task.getException().getMessage(),
+                            "Something went wrong with sending an email",
                             Toast.LENGTH_LONG
                     ).show();
                 }

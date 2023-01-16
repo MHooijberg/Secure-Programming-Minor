@@ -28,7 +28,6 @@
 
         <activity android:name=".Controller.LoginActivityController" android:exported="false" />
         <activity android:name=".Controller.RegistrationActivityController" android:exported="false" />
-        <activity android:name=".Controller.OTPActivityController" android:exported="false" />
         <activity android:name=".Controller.GuildServerController" android:exported="false" />
         <activity android:name=".Controller.SettingsActivityController" android:exported="false" />
         <activity android:name=".Controller.ResetPasswordActivityController" android:exported="false" />

@@ -32,6 +32,7 @@ public class LoginActivityController extends AppCompatActivity {
     }
 
     private void authenticateUser(){
+        //Validate user inputs
         this.loginButton.setOnClickListener(view -> {
             String userEmail = this.username.getText().toString();
             String userPassword = this.password.getText().toString();

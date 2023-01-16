@@ -61,6 +61,7 @@ public class CryptographyManager {
     }
 
     private SecretKey getKey() throws UnrecoverableEntryException, KeyStoreException, NoSuchAlgorithmException, InvalidAlgorithmParameterException {
+        //Get the key from the keystore system, if it doesn't exists, it creates a new one
         KeyStore.SecretKeyEntry existingKey = (KeyStore.SecretKeyEntry) keyStore.getEntry("secret",null);
         if(existingKey == null){
              return generateKey();
@@ -81,6 +82,7 @@ public class CryptographyManager {
     }
 
     public Blob encryptMessage(String message) throws IllegalBlockSizeException, BadPaddingException {
+        //Encrypts a message based on the cipher and stores its vector in memory
         byte[] encryptedBytes = this.cipher.doFinal(message.getBytes(StandardCharsets.UTF_8));
         this.initializationVector = cipher.getIV();
         return Blob.fromBytes(encryptedBytes);
@@ -92,6 +94,7 @@ public class CryptographyManager {
 
 
     public String decryptMessage(Blob message,Blob initializationVector) throws BadPaddingException, NoSuchPaddingException, NoSuchAlgorithmException, IllegalBlockSizeException {
+        //Decrypts the message retrieved from the database by using its vector
         byte[] theMessage = message.toBytes();
         byte[] vector = initializationVector.toBytes();
         Cipher decryptionCipher = getDecryptCipher(vector);

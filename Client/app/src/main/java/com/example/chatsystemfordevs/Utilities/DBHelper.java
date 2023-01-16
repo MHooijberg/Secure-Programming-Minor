@@ -19,8 +19,12 @@ import java.util.List;
 
 public class DBHelper {
     private final FirebaseFirestore database;
+    private final CollectionReference userCollection;
+    private final CollectionReference guildCollection;
     public DBHelper() {
         this.database = FirebaseFirestore.getInstance();
+        this.userCollection = this.database.collection("Users");
+        this.guildCollection = this.database.collection("Guilds");
     }
 
     public FirebaseFirestore getDatabase() {
@@ -34,16 +38,14 @@ public class DBHelper {
                 Log.w(TAG, "Fetching FCM registration token failed", task.getException());
             }else{
                 Users user = new Moderator(id,email,null,false,phoneNumber, Arrays.asList(task.getResult()),username);
-                CollectionReference collection = this.database.collection("Users");
-                collection.add(user).addOnSuccessListener(documentReference
+                userCollection.add(user).addOnSuccessListener(documentReference
                         -> Log.d("Success","A user has been added")).addOnFailureListener(e -> Log.d("Failure", "There was a problem with adding the user"));
             }
         });
     }
 
     public void createGuildForUser(String userId){
-        CollectionReference userCollection = this.database.collection("Users");
-        userCollection.document(userId).get().addOnCompleteListener(task -> {
+        this.userCollection.document(userId).get().addOnCompleteListener(task -> {
             if(task.isSuccessful()){
                 createGuild(task.getResult().getReference());
             }
@@ -51,8 +53,7 @@ public class DBHelper {
     }
 
     private void createGuild(DocumentReference document) {
-        CollectionReference guildCollection = this.database.collection("Guilds");
-        CollectionReference userCollection = this.database.collection("Users");
+        //Creates guild structure for a user
         HashMap<String, Object> guild = new HashMap<>();
         HashMap<String, Object> messages = new HashMap<>();
         HashMap<String, Object> githubChannel = new HashMap<>();
@@ -61,7 +62,7 @@ public class DBHelper {
         HashMap<String, Object> users = new HashMap<>();
 
         users.put("members",Arrays.asList());
-        users.put("moderators",Arrays.asList(userCollection.document(document.getId())));
+        users.put("moderators",Arrays.asList(this.userCollection.document(document.getId())));
 
         guild.put("gitHubAPIKey", "Secret");
         guild.put("name", "guild name");
@@ -78,7 +79,7 @@ public class DBHelper {
         messages.put("user", "user");
 
         try {
-            guildCollection.add(guild).addOnSuccessListener(guildReference -> {
+            this.guildCollection.add(guild).addOnSuccessListener(guildReference -> {
                 guildCollection.document(guildReference.getId()).collection("Channels").document("Github").set(githubChannel);
                 guildCollection.document(guildReference.getId()).collection("Channels").document("StackOverFlow").set(stackOverFlowChannel);
                 guildCollection.document(guildReference.getId()).collection("Channels").document("OpenSource").set(openSourceChannel);
@@ -99,8 +100,7 @@ public class DBHelper {
     }
 
     public void sendMessageToDatabase(String userId, String channel, Message message, String guild) {
-        CollectionReference usersCollection = this.database.collection("Users");
-        DocumentReference userReference = usersCollection.document(userId);
+        DocumentReference userReference = this.userCollection.document(userId);
         try {
         userReference.get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {

@@ -54,7 +54,7 @@ public class RegistrationActivityController extends AppCompatActivity implements
             String phoneInput = phoneNumber.getText().toString().trim();
             String pass = password.getText().toString().trim();
             String repeatPass = repeatablePassword.getText().toString().trim();
-
+            //Validation if user fields are empty and if they meet the input validation requirements
             if (!TextUtils.isEmpty(usr) && !TextUtils.isEmpty(usrEmail) && !TextUtils.isEmpty(phoneInput) && !TextUtils.isEmpty(pass)) {
                 if (authenticationManager.isUsernameAlphaNumeric(usr)
                         && authenticationManager.isEmailValid(usrEmail)
